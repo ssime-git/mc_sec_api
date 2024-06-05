@@ -1,14 +1,17 @@
+# uniquement auth avec un client
+# dans les slides auth avec plusieurs applications
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from hashlib import sha256
 from sklearn.preprocessing import OneHotEncoder
+
 import numpy as np
 import joblib
 import json
 import os
 from datetime import datetime, timedelta
-import jwt
+import jwt # utiliser dans tous les protocole oauth
 from cryptography.fernet import Fernet
 
 app = FastAPI()
@@ -93,7 +96,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expiré")
 
-################# Defining the endpoints
+################# Defining the endpoints : Need 3 endpoints
 
 @app.post("/register", response_model=UserOut)
 async def register(user: User):
