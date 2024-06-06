@@ -7,3 +7,4 @@ cryptography
 numpy
 joblib
 python-dotenv
+jwt

@@ -132,4 +132,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("clear_embedded_encryption:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("1_clear_embedded_encryption:app", host="0.0.0.0", port=8000, reload=True)

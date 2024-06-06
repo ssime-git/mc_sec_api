@@ -137,4 +137,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("enc_key_in_env:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("2_enc_key_in_env:app", host="0.0.0.0", port=8000, reload=True)
