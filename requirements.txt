@@ -1,0 +1,8 @@
+fastapi
+cryptography
+scikit-learn
+uvicorn
+pydantic
+cryptography
+numpy
+joblib

@@ -1,11 +1,12 @@
+import joblib
+import hashlib
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from cryptography.fernet import Fernet
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
-import joblib
-import hashlib
 
 app = FastAPI()
 
@@ -21,7 +22,7 @@ class User(BaseModel):
 
 ##########################################
 # Load the trained model
-model = joblib.load("model_fin2.pkl")
+model = joblib.load("./models/model_fin2.pkl")
 
 # Create a OneHotEncoder for the categorical features
 encoder = OneHotEncoder(categories="auto")
@@ -160,3 +161,6 @@ def root():
     """
 
 ####################################
+# Run the FastAPI application
+
+uvicorn.run(app, host="localhost", port=8000, reload=True)
