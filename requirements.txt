@@ -6,3 +6,4 @@ pydantic
 cryptography
 numpy
 joblib
+python-dotenv

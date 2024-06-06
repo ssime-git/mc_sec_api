@@ -52,7 +52,7 @@ cipher_suite = generate_encryption_suite()
 users = initialize_users_storage()
 
 # Helper functions
-def validate_user_input(user: User, allowed_classes):
+def validate_user_input(user: User):
     if user.favorite_color not in allowed_classes['favorite_colors']:
         raise HTTPException(status_code=400, detail="Invalid favorite color")
     if user.favorite_food not in allowed_classes['favorite_foods']:
@@ -60,14 +60,14 @@ def validate_user_input(user: User, allowed_classes):
     if user.sex not in allowed_classes['sex']:
         raise HTTPException(status_code=400, detail="Invalid sex")
 
-def encrypt_user_data(user: User, cipher_suite):
+def encrypt_user_data(user: User):
     return {
         "encrypted_first_name": cipher_suite.encrypt(user.first_name.encode()),
         "encrypted_last_name": cipher_suite.encrypt(user.last_name.encode()),
         "encrypted_email": cipher_suite.encrypt(user.email.encode())
     }
 
-def preprocess_user_data(user: User, encoder):
+def preprocess_user_data(user: User):
     categorical_features = np.array([[user.sex, user.favorite_color, user.favorite_food]])
     encoded_features = encoder.transform(categorical_features).flatten()
     features = np.concatenate(([user.age], encoded_features))
@@ -79,9 +79,9 @@ def pseudonymize_data(encrypted_data):
 # Endpoints
 @app.post("/predict/")
 async def predict_sign(user: User):
-    validate_user_input(user, allowed_classes)
-    encrypted_data = encrypt_user_data(user, cipher_suite)
-    features = preprocess_user_data(user, encoder)
+    validate_user_input(user)
+    encrypted_data = encrypt_user_data(user)
+    features = preprocess_user_data(user)
     prediction = model.predict(features)[0]
 
     users.append(encrypted_data)
@@ -123,13 +123,8 @@ async def root():
     html_content = """
     <html>
     <body>
-        <script>
-            function showPopup() {
-                alert("Thank you for using our service! By clicking the button below, you give your consent for us to use your data for predicting your astrological sign.");
-            }
-        </script>
         <h1>Welcome to the Astrological Sign Prediction API!</h1>
-        <button onclick="showPopup()">Click Me!</button>
+        <button>Click Me to Predict Your Astrological Sign!</button>
     </body>
     </html>
     """
@@ -137,4 +132,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("enc_key_in_env:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("clear_embedded_encryption:app", host="0.0.0.0", port=8000, reload=True)
