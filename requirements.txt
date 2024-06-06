@@ -1,6 +1,6 @@
+scikit-learn==1.2.2
 fastapi
 cryptography
-scikit-learn
 uvicorn
 pydantic
 cryptography
