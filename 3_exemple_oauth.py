@@ -111,9 +111,10 @@ def preprocess_user_data(user: UserPred):
 @app.post("/register", response_model=UserOut)
 async def register(user: User):
     hashed_password = sha256(user.password.encode()).hexdigest()
-    user_in_db = UserInDB(**user.dict(), password=hashed_password)
+    user_data = user.dict(exclude={"password"})
+    user_in_db = UserInDB(**user_data, password=hashed_password)
     save_user(user_in_db)
-    return UserOut(**user.dict(exclude={"password"}))
+    return UserOut(**user_data)
 
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):

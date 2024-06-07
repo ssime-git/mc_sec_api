@@ -129,6 +129,13 @@ Bien pour lors de la phase de prototypage mais meilleur avec la clé enregistré
 
 OAuth = Ensemble de protocole (auth-code utilisé avec plusieurs app qui intéagisse en même temps).
 
+Pour l'utilisation suivre le processe ci-dessous
+
+1. lancer l'API : `python 3_etc.`
+2. enregistrer un user sur le endpoint `register/` : `ssime:test` (déjà défini)
+3. s'authentifier avec les creds ci-dessus : 
+![alt text](image.png)
+4. 
 ## OAuth entre plusieurs applications
 
 Voir [slides](https://docs.google.com/presentation/d/1LmQAB2wKJdoj7cNDC6G40Jfd6m3r5xt_/edit#slide=id.g2c6c8d033b1_0_64)

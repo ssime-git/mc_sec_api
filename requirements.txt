@@ -8,3 +8,4 @@ numpy
 joblib
 python-dotenv
 jwt
+PyJWT
