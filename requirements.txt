@@ -9,3 +9,4 @@ joblib
 python-dotenv
 jwt
 PyJWT
+requests
