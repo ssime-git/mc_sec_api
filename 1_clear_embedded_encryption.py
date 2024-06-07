@@ -37,7 +37,7 @@ def create_encoder(allowed_classes):
     return encoder
 
 def generate_encryption_suite():
-    encryption_key = Fernet.generate_key()
+    encryption_key = Fernet.generate_key() # Bad practices
     cipher_suite = Fernet(encryption_key)
     return cipher_suite
 

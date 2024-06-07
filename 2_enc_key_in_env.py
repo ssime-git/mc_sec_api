@@ -1,3 +1,4 @@
+import os
 import joblib
 import hashlib
 from fastapi import FastAPI, HTTPException
@@ -7,6 +8,11 @@ from cryptography.fernet import Fernet
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 
+# Variable d'env
+from dotenv import load_dotenv
+load_dotenv()
+
+# API app instantiation
 app = FastAPI()
 
 # Define the User input model
@@ -37,7 +43,7 @@ def create_encoder(allowed_classes):
     return encoder
 
 def generate_encryption_suite():
-    encryption_key = Fernet.generate_key()
+    encryption_key = os.getenv("ENCRYPTION_KEY") #Diff from 1_Fernet1_clear_embedded_encryption .generate_key()
     cipher_suite = Fernet(encryption_key)
     return cipher_suite
 
