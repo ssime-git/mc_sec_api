@@ -247,10 +247,10 @@ To use it, follow the steps below
 1. launch the API: `python 3_example_oauth`.
 2. register a user on the `register/` endpoint: `ssime:test` (username:password already defined)
 3. authenticate with the creds above : 
-![alt text](image.png)
+![alt text](./report/image.png)
 5. Test the `./precedict` route
 4. The `token` route is simply the way to authenticate programmatically
-![alt text](image-1.png)
+![alt text](./report/image-1.png)
 
 ## 2.4 Authentication & Authorization with more than two applications with OAuth 2.0
 
