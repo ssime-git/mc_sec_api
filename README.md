@@ -119,8 +119,7 @@ response = requests.get(url)
 print(response.json())
 ```
 
-### GDPR considerations
-## Best Practices Assessment: GDPR and Security
+### Best Practices Assessment: GDPR and Security
 
 The used code demonstrates some good practices and areas for improvement in terms of GDPR and security. Let's break it down:
 
@@ -168,6 +167,38 @@ The used code demonstrates some good practices and areas for improvement in term
 
 By addressing these issues, the code can significantly improve its compliance with GDPR and security best practices, ensuring user privacy and data protection. 
 
+### About Key Management Systems (KMS)
+
+Here are some examples of Key Management Systems (KMS) for managing encryption keys, categorized by pricing and open-source status:
+
+**Paid KMS:**
+
+* **Amazon Key Management Service (KMS):** Offered as part of AWS, it provides robust key management, integration with other AWS services, and features like key rotation, hardware security modules (HSMs), and audit logging.
+* **Google Cloud Key Management Service (KMS):** Google's KMS solution integrated into Google Cloud Platform, offering similar features to AWS KMS, including HSM support and compliance with various standards.
+* **Microsoft Azure Key Vault:** Azure's key management service, providing key storage, access control, and integration with other Azure services. It offers both software and hardware-based security options.
+* **Hashicorp Vault:** A popular open-core KMS solution that provides key management, secret storage, and access control. It offers both free and paid plans with varying features.
+
+**Free and Open-Source KMS:**
+
+* **Vault (HashiCorp):**  While Vault is a paid offering in the enterprise edition, its core functionality for key management is open-source and free to use.  Vault is popular due to its flexible architecture, strong community, and support for multiple platforms.
+* **Kubernetes Secrets Manager:** This is a KMS specifically designed for Kubernetes environments. It's built into Kubernetes and handles key storage and retrieval for applications running within the cluster.
+* **Confidentiality Key Management System (CKMS):** This is a free and open-source KMS developed by the University of California, Berkeley. CKMS focuses on secure key management for distributed systems and features a decentralized architecture.
+
+**Choosing the Right KMS:**
+
+* **Integration:** Choose a KMS that integrates well with your existing infrastructure (e.g., cloud platform, development tools, and security systems).
+* **Features:**  Consider the features you need, such as key rotation, HSM support, audit logging, compliance with standards (e.g., FIPS 140-2, GDPR), and integration with other security tools.
+* **Scalability:**  Choose a KMS that can scale with your needs and handle large numbers of keys and operations.
+* **Cost:**  Evaluate the pricing models of different KMS options and choose one that fits your budget.
+
+**Key Considerations for Selecting a KMS:**
+
+* **Security:** The KMS should provide robust security features to protect keys from unauthorized access, disclosure, and tampering.
+* **Ease of Use:** The KMS should be easy to use, configure, and integrate into your existing systems.
+* **Compliance:**  Ensure the KMS meets relevant regulatory requirements for data protection and security (e.g., GDPR, HIPAA, PCI DSS).
+* **Support:**  Choose a KMS with adequate support options to help you resolve issues and maintain compliance.
+
+Remember that security is a continuous process. Choose a KMS solution that fits your specific needs, monitor its performance, and regularly update it to ensure the ongoing security of your encryption keys.
 
 ## Securing attempt 2
 
