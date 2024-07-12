@@ -3,10 +3,11 @@
 ## Setup
 
 ```sh
-python -m venv venv
-source  venv/bin/activate
+python -m venv .venv
+source  .venv/bin/activate
 pip install -r requirements.txt
 ```
+> ** Special attention** : Never install `jwt`and `PyJWT`package at the same time. See [this thread](https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode) on stackoverflow.
 
 ## Securing attempt 1 : `1_clear_embedded_encryption.py`
 
@@ -233,8 +234,7 @@ This version makes a significant improvement by moving the encryption key to an 
 * **Consider adding authentication and authorization mechanisms.**  Control access to the API to prevent unauthorized users from accessing or modifying user data.
 
 
-
-## OAuth simple : Avec password bearer (script `example_oauth.py`)
+## OAuth simple : Avec password bearer (script `3_example_oauth.py`)
 
 OAuth = Set of protocols (auth-code used with several apps interacting at the same time).
 
@@ -248,9 +248,39 @@ To use it, follow the steps below
 4. The `token` route is simply the way to authenticate programmatically
 ![alt text](image-1.png)
 
-## OAuth with more than two applications
+## OAuth2 with more than two applications
 
-See [slides](https://docs.google.com/presentation/d/1LmQAB2wKJdoj7cNDC6G40Jfd6m3r5xt_/edit#slide=id.g2c6c8d033b1_0_64)
+
+This detailed breakdown explains the steps involved in the OAuth 2.0 flow for sharing a Spotify playlist with Gmail contacts. It highlights the key actors, actions, and details at each stage of the process.
+
+# OAuth Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Spotify
+    participant Google Server
+    participant GMail
+    
+    User->>Spotify: 1. Initialization of the request
+    Spotify->>Google Server: 2. Generation of the code verifier (random string) and code challenge (hashing)
+    note right of Spotify: Hash the code verifier with SHA-256 algorithm
+    Google Server-->>Spotify: Code Challenge
+    Spotify->>Google Server: 3. Spotify redirects to Google with the Code Challenge
+    Google Server->>User: 4. Google asks the user to sign in
+    User->>Google Server: User signs in
+    Google Server->>User: 5. Google asks for permission for Spotify to access contacts
+    User->>Google Server: User grants access
+    Google Server-->>Spotify: 6. Google generates an authorization code (AUTH_CODE) and redirects to Spotify with this code
+    Spotify->>Google Server: 7. Sends a request to Google to exchange AUTH_CODE for a token (including AUTH_CODE, client ID, client secret, and code verifier)
+    Google Server-->>Spotify: 8. Verify that the code challenge equals the code verifier
+    Google Server->>Spotify: 9. Issue an access token to Spotify
+    Spotify->>GMail: 10. Request to GMail API to fetch contacts
+    GMail-->>Spotify: 11. GMail responds with contacts
+    Spotify-->>User: 12. Send confirmation of playlist creation
+```
+
+
 
 ## MLOPS Best Practices for Security and GDPR:
 
