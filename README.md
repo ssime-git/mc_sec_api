@@ -1,6 +1,8 @@
 # Securing API
 
-## Setup
+## 1. Setup
+
+Run the following commands to set up the environment:
 
 ```sh
 python -m venv .venv
@@ -8,17 +10,21 @@ source  .venv/bin/activate
 pip install -r requirements.txt
 ```
 > ** Special attention** : Never install `jwt`and `PyJWT`package at the same time. See [this thread](https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode) on stackoverflow.
+>
+> Checkout the content of the `requirements.txt` file.
 
-## Securing attempt 1 : `1_clear_embedded_encryption.py`
+Now, we will try to secure a very basic API.
 
-example 1 : la clé d'encodage en clair --> mauvaise pratique
+## 2. API V0 : Security attempt 1
+
+Run the script:
 
 ```sh
 # Running the script
 python 1_clear_embedded_encryption.py
 ```
 
-### testing the API :
+### Testing the API :
 To test the API, you can use various tools such as `curl`, Postman, or Python scripts. Below, I'll provide examples for each method to test the `/predict/`, `/pseudonymize/`, and `/decrypt/{user_id}` endpoints.
 
 #### Using `curl`
@@ -201,11 +207,9 @@ Here are some examples of Key Management Systems (KMS) for managing encryption k
 
 Remember that security is a continuous process. Choose a KMS solution that fits your specific needs, monitor its performance, and regularly update it to ensure the ongoing security of your encryption keys.
 
-## Securing attempt 2
+## 2.2 API V2 : Securing attempt 2
 
-### Changelog :
-
-**Same code**, but with an absent key and using a `.env` file to store the encryption key. Suitable for prototype phase, but better with the key stored in GitHub secrets, for example.
+**Same code**, but with an absent key and using a `.env` file to store the encryption key. Suitable for prototype phase, but better with the key stored in a KMS or in the directly define in the production environment.
 
 ### GDPR considerations
 This version makes a significant improvement by moving the encryption key to an environment variable, addressing one of the key security concerns from the previous version. Let's break down the changes and assess the best practices:
@@ -234,7 +238,7 @@ This version makes a significant improvement by moving the encryption key to an 
 * **Consider adding authentication and authorization mechanisms.**  Control access to the API to prevent unauthorized users from accessing or modifying user data.
 
 
-## OAuth simple : Avec password bearer (script `3_example_oauth.py`)
+## 2.3 API V3: Simple OAuth : with password bearer (script `3_example_oauth.py`)
 
 OAuth = Set of protocols (auth-code used with several apps interacting at the same time).
 
@@ -248,12 +252,10 @@ To use it, follow the steps below
 4. The `token` route is simply the way to authenticate programmatically
 ![alt text](image-1.png)
 
-## OAuth2 with more than two applications
+## 2.4 Authentication & Authorization with more than two applications with OAuth 2.0
 
+This detailed breakdown explains the steps involved in the OAuth 2.0 flow for sharing a Spotify playlist with Gmail contacts use case. It highlights the key actors, actions, and details at each stage of the process.
 
-This detailed breakdown explains the steps involved in the OAuth 2.0 flow for sharing a Spotify playlist with Gmail contacts. It highlights the key actors, actions, and details at each stage of the process.
-
-# OAuth Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -280,9 +282,25 @@ sequenceDiagram
     Spotify-->>User: 12. Send confirmation of playlist creation
 ```
 
+Here are the associated explanations for each stage of the OAuth 2.0 flow:
 
+| **Step**                       | **Actor**             | **Action**                                                                                             | **Details**                                                                                                                                                                       |
+|--------------------------------|-----------------------|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **1. Request Initiation** | User            | Opens Spotify and selects the option to share a playlist with Gmail contacts.               |                                                                                                                                                                                   |
+| **2. Generation of Code Verifier and Code Challenge** | Spotify               | Generates a "Code Verifier" (random string) and a "Code Challenge" (hash of the Code Verifier).         | Code Verifier: random string. <br> Code Challenge: hash of the Code Verifier using SHA-256.                                                                                     |
+| **3. Redirect to Authorization Server** | Spotify               | Redirects to Google with the Code Challenge.                                                           | URL: `https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=SPOTIFY_CLIENT_ID&redirect_uri=SPOTIFY_REDIRECT_URI&scope=email+profile+contacts&code_challenge=CODE_CHALLENGE&code_challenge_method=S256` |
+| **4. User Authentication** | User & Google | Google asks the user to log in.                                                         | Enter login credentials (email and password).                                                                                                                                  |
+| **5. Consent Request**  | Google & User   | Google requests permission for Spotify to access Gmail contacts.                                | Display of requested permissions.                                                                                                                                              |
+| **6. User Authorization** | User            | Authorizes or denies access to Gmail contacts.                                                       | If authorized, Google generates an authorization code.                                                                                                                                |
+| **7. Redirect to Spotify with Authorization Code** | Google                | Redirects to Spotify with the authorization code.                                                      | URL: `https://spotify.com/callback?code=AUTH_CODE`                                                                                                                               |
+| **8. Exchange Authorization Code for Access Token with Code Verifier** | Spotify               | Sends a request to Google to exchange the authorization code for an access token.               | Includes the authorization code, client ID, client secret, and Code Verifier. <br> **The information is directly exchanged between servers, not via the browser.**                                                        |
+| **9. Code Challenge Verification** | Google                | Verifies that the Code Challenge matches the Code Verifier.                                              | Hashes the Code Verifier and compares it to the initial Code Challenge.                                                                                                           |
+| **10. Obtaining the Access Token** | Google                | Issues an access token to Spotify.                                                                    | Access token allowing access to Gmail contacts.                                                                                                                            |
+| **11. Use of Access Token to Access Resources** | Spotify               | Sends a request to the Gmail API to retrieve the user's contacts.                          | GET request to the Gmail endpoint: `https://www.googleapis.com/gmail/v1/users/me/contacts`                                                                                       |
+| **12. Access to Contacts and Playlist Sharing** | Gmail & Spotify       | Gmail responds with the contact information.                                                       | Spotify uses this information to send the playlist to Gmail contacts.                                                                                                     |
+| **13. Confirmation and Revocation** | User            | Receives confirmation that the playlist has been sent.                                                   | Can revoke Spotify's access to contacts via Google settings.                                                                                                       |
 
-## MLOPS Best Practices for Security and GDPR:
+# MLOPS Best Practices for Security and GDPR:
 
 | MLOPS Stage | Security Best Practices | GDPR Considerations | Requirements |
 |---|---|---|---|
