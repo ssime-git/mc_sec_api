@@ -46,6 +46,17 @@ Ce projet est une implémentation simplifiée d'un flux OAuth2 en Python, compre
    python main.py
    ```
 
+   La sortie obtenue:
+
+   ```sh
+   127.0.0.1 - - [07/Aug/2024 19:45:47] "POST /auth HTTP/1.1" 200 -
+   Code d'autorisation obtenu : B9JO7PSI
+   127.0.0.1 - - [07/Aug/2024 19:45:47] "POST /token HTTP/1.1" 200 -
+   Jeton d'accès obtenu : BBGTKQD2D9ERJ9I2
+   127.0.0.1 - - [07/Aug/2024 19:45:47] "GET /data HTTP/1.1" 200 -
+   Données de l'utilisateur : Données confidentielles d'Alice
+   ```
+
 3. Le script va :
    - Démarrer le serveur Flask en arrière-plan
    - Utiliser le client pour simuler un flux OAuth2 complet
@@ -117,7 +128,3 @@ Cette implémentation est simplifiée et ne comprend pas toutes les vérificatio
 ## Contribution
 
 Les contributions à ce projet sont les bienvenues. N'hésitez pas à ouvrir une issue ou à soumettre une pull request si vous avez des suggestions d'amélioration.
-
-## Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
