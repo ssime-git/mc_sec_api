@@ -320,4 +320,4 @@ Here are the associated explanations for each stage of the OAuth 2.0 flow:
 * **Regular Security Audits:**  Conduct regular security audits to identify vulnerabilities and ensure compliance.
 * **Data Governance Framework:**  Establish a data governance framework with clear policies and processes for managing data privacy and security.
 
-# Oauth2 protocol
+## 2.5 Oauth2 protocol
