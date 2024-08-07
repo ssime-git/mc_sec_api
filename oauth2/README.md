@@ -120,6 +120,20 @@ sequenceDiagram
         API->>API: /data endpoint
     end
 ````
+## Intérêt de l'Oauth2
+
+| Avantage | Description | Implémentation dans notre exemple |
+|----------|-------------|-----------------------------------|
+| Séparation des responsabilités | Divise les fonctionnalités entre différents composants | Utilisation de fichiers séparés : `auth_server.py`, `resource_server.py`, `api.py`, `client.py` |
+| Sécurité améliorée | Protège les identifiants de l'utilisateur et limite l'exposition des données | Le client n'a jamais accès direct aux données de l'utilisateur, utilisation de jetons d'accès |
+| Autorisation granulaire | Permet un contrôle fin de l'accès aux ressources | Possibilité d'ajouter des portées (scopes) pour différents niveaux d'accès |
+| Révocation facile | Permet de révoquer l'accès sans changer les identifiants | Possibilité d'implémenter une fonction pour invalider les jetons |
+| Interopérabilité | Facilite l'intégration avec d'autres services | L'implémentation suit les principes de base d'OAuth2 |
+| Expérience utilisateur améliorée | Simplifie le processus d'authentification pour l'utilisateur | L'utilisateur n'a pas à partager ses identifiants avec le client |
+| Flexibilité | S'adapte à différents types d'applications et de flux | Structure modulaire permettant d'ajouter facilement de nouveaux flux |
+| Audit et traçabilité | Permet de suivre et d'auditer les accès | Possibilité d'ajouter des métadonnées aux jetons pour le suivi |
+| Évolutivité | Permet une mise à l'échelle indépendante des composants | Chaque composant (auth, ressources, API) peut être mis à l'échelle séparément |
+| Conformité | Aide à se conformer aux réglementations sur la protection des données | Limite l'exposition des informations sensibles de l'utilisateur |
 
 ## Avertissement
 
