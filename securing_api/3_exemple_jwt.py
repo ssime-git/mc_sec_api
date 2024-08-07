@@ -2,6 +2,7 @@ import joblib
 import hashlib
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from hashlib import sha256
 from sklearn.preprocessing import OneHotEncoder
@@ -135,6 +136,18 @@ async def predict_sign(user: UserPred, current_user: UserOut = Depends(get_curre
     prediction = model.predict(features)[0]
     return {"astrological_sign": prediction}
 
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    html_content = """
+    <html>
+    <body>
+        <h1>Welcome to the secured Astrological Sign Prediction API!</h1>
+        <button>Click Me to Predict Your Astrological Sign!</button>
+    </body>
+    </html>
+    """
+    return html_content
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("3_exemple_oauth:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("3_exemple_jwt:app", host="0.0.0.0", port=8000, reload=True)

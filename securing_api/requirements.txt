@@ -10,3 +10,4 @@ python-dotenv
 ## never use jwt in addition to the one below see : https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode
 PyJWT
 requests
+python-multipart

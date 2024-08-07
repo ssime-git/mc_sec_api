@@ -5,8 +5,9 @@
 Run the following commands to set up the environment:
 
 ```sh
-python -m venv .venv
-source  .venv/bin/activate
+cd securing_api
+python -m venv .sec_env
+source  .sec_venv/bin/activate
 pip install -r requirements.txt
 ```
 > ** Special attention** : Never install `jwt`and `PyJWT`package at the same time. See [this thread](https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode) on stackoverflow.
@@ -136,6 +137,7 @@ The used code demonstrates some good practices and areas for improvement in term
 * **Pseudonymization:** The `/pseudonymize/` endpoint pseudonymizes user data by hashing the encrypted data, making it difficult to link back to the individual user. This is a good step towards achieving data anonymization and minimizing privacy risks.
 * **Input Validation:** The `validate_user_input` function checks user-provided data against predefined allowed classes, preventing invalid inputs and potential vulnerabilities.
 * **Data Encryption:** The code encrypts user data with Fernet, providing protection against unauthorized access and data breaches.
+* **Consent Implementation:**  The `/` endpoint now includes a simple JavaScript snippet that pops up an alert to the user, asking for consent before using their data. While this approach is basic, it's a good starting point for implementing consent mechanisms.
 
 **Areas for Improvement:**
 
@@ -217,7 +219,6 @@ This version makes a significant improvement by moving the encryption key to an 
 **Improvements:**
 
 * **Encryption Key Management:** The `generate_encryption_suite` function now retrieves the encryption key from the environment variable `ENCRYPTION_KEY` using `os.getenv("ENCRYPTION_KEY")`. This is a better approach as it avoids hardcoding the key within the code, making it harder for attackers to discover it.
-* **Consent Implementation:**  The `/` endpoint now includes a simple JavaScript snippet that pops up an alert to the user, asking for consent before using their data. While this approach is basic, it's a good starting point for implementing consent mechanisms.
 
 **Areas for Improvement:**
 
@@ -238,14 +239,14 @@ This version makes a significant improvement by moving the encryption key to an 
 * **Consider adding authentication and authorization mechanisms.**  Control access to the API to prevent unauthorized users from accessing or modifying user data.
 
 
-## 2.3 API V3: Simple OAuth : with password bearer (script `3_example_oauth.py`)
+## 2.3 API V3: Simple OAuth : with password bearer (script `3_example_jwt.py`)
 
 OAuth = Set of protocols (auth-code used with several apps interacting at the same time).
 
 To use it, follow the steps below
 
 1. launch the API: `python 3_example_oauth`.
-2. register a user on the `register/` endpoint: `ssime:test` (username:password already defined)
+2. register a user on the `register/` endpoint or use `ssime:test` (username:password already defined)
 3. authenticate with the creds above : 
 ![alt text](./report/image.png)
 5. Test the `./precedict` route
@@ -318,3 +319,5 @@ Here are the associated explanations for each stage of the OAuth 2.0 flow:
 * **Strong Access Control:**  Implement granular access control to restrict user access to sensitive data and model components.
 * **Regular Security Audits:**  Conduct regular security audits to identify vulnerabilities and ensure compliance.
 * **Data Governance Framework:**  Establish a data governance framework with clear policies and processes for managing data privacy and security.
+
+# Oauth2 protocol
