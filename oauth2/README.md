@@ -1,144 +1,269 @@
-# Projet OAuth2 avec API Python
+# OAuth2 Flow Demonstration
 
-Ce projet est une implémentation simplifiée d'un flux OAuth2 en Python, comprenant un serveur d'autorisation, un serveur de ressources, un client, et une API RESTful. Il est conçu à des fins éducatives pour illustrer les concepts de base du protocole OAuth2.
+A comprehensive educational demonstration of the OAuth2 authorization flow, implemented with Python and Flask. This project shows how different components in an OAuth2 system interact to provide secure authorization and resource access.
 
-## Objectifs du projet
+## Table of Contents
+- [Overview](#overview)
+- [System Architecture](#system-architecture)
+- [OAuth2 Flow Explanation](#oauth2-flow-explanation)
+- [Installation](#installation)
+- [Running the Demo](#running-the-demo)
+- [Component Details](#component-details)
+- [Understanding the Code](#understanding-the-code)
+- [Security Considerations](#security-considerations)
+- [Troubleshooting](#troubleshooting)
 
-1. Démontrer le flux OAuth2 de base
-2. Illustrer la séparation des responsabilités entre les différents composants d'un système OAuth2
-3. Fournir un exemple pratique d'une API RESTful utilisant Flask
+## Overview
 
-## Structure du projet
+This demo implements a complete OAuth2 authorization flow with three separate servers:
+- Authorization Server (Port 5050): Handles authentication and issues tokens
+- Resource Server (Port 5051): Provides protected resources
+- Client Application (Port 5052): Demonstrates how to obtain and use OAuth2 tokens
 
-- `auth_server.py` : Implémentation du serveur d'autorisation
-- `resource_server.py` : Implémentation du serveur de ressources
-- `client.py` : Client OAuth2 pour tester le flux
-- `api.py` : API Flask exposant les endpoints OAuth2
-- `main.py` : Script principal pour exécuter l'application
-- `requirements.txt` : Liste des dépendances du projet
+Each step of the OAuth2 flow is clearly logged and visualized in the browser, making it ideal for learning how OAuth2 works.
 
-## Prérequis
-
-- Python 3.7 ou supérieur
-- pip (gestionnaire de paquets Python)
-
-## Installation
-
-1. Clonez ce dépôt ou téléchargez les fichiers dans un nouveau dossier.
-
-2. (Optionnel mais recommandé) Créez un environnement virtuel :
-   ```sh
-   python -m venv venv
-   source venv/bin/activate  # Sur Windows, utilisez `venv\Scripts\activate`
-   ```
-
-3. Installez les dépendances :
-   ```sh
-   pip install -r requirements.txt
-   ```
-
-## Exécution du projet
-
-1. Assurez-vous d'être dans le dossier du projet et que votre environnement virtuel est activé (si vous en utilisez un).
-
-2. Exécutez le script principal :
-   ```sh
-   python main.py
-   ```
-
-   La sortie obtenue:
-
-   ```sh
-   127.0.0.1 - - [07/Aug/2024 19:45:47] "POST /auth HTTP/1.1" 200 -
-   Code d'autorisation obtenu : B9JO7PSI
-   127.0.0.1 - - [07/Aug/2024 19:45:47] "POST /token HTTP/1.1" 200 -
-   Jeton d'accès obtenu : BBGTKQD2D9ERJ9I2
-   127.0.0.1 - - [07/Aug/2024 19:45:47] "GET /data HTTP/1.1" 200 -
-   Données de l'utilisateur : Données confidentielles d'Alice
-   ```
-
-3. Le script va :
-   - Démarrer le serveur Flask en arrière-plan
-   - Utiliser le client pour simuler un flux OAuth2 complet
-
-4. Vous devriez voir une sortie similaire à celle-ci :
-   ```js
-   Code d'autorisation obtenu : XXXXXXXX
-   Jeton d'accès obtenu : XXXXXXXXXXXXXXXX
-   Données de l'utilisateur : Données confidentielles d'Alice
-   ```
-
-## Comprendre le flux OAuth2
-
-1. Le client demande un code d'autorisation au serveur d'autorisation.
-2. Le serveur d'autorisation génère et renvoie un code d'autorisation.
-3. Le client échange ce code contre un jeton d'accès.
-4. Le client utilise ce jeton pour accéder aux ressources protégées via l'API.
+## System Architecture
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
-    participant API as API (Flask)
-    participant AS as Authorization Server
-    participant RS as Resource Server
+    participant User
+    participant Client as Client App<br/>(Port 5052)
+    participant Auth as Auth Server<br/>(Port 5050)
+    participant Resource as Resource Server<br/>(Port 5051)
 
-    C->>API: POST /auth (client_id, username)
-    API->>AS: generate_auth_code(client_id, username)
-    AS-->>API: auth_code
-    API-->>C: auth_code
+    Note over User,Resource: Step 1: Initial Login Request
+    User->>Client: Click "Login with OAuth2"
+    Client->>Auth: GET /authorize<br/>client_id=myclient<br/>redirect_uri=http://localhost:5052/callback
+    
+    Note over User,Resource: Step 2: Authorization
+    Auth->>Auth: Validate client_id<br/>and redirect_uri
+    Auth->>Auth: Generate auth code
+    Auth-->>Client: Redirect with auth_code
+    
+    Note over User,Resource: Step 3: Token Exchange
+    Client->>Auth: POST /token<br/>client_id, client_secret, auth_code
+    Auth->>Auth: Validate credentials<br/>and auth_code
+    Auth-->>Client: Return access_token
+    
+    Note over User,Resource: Step 4: Access Protected Resource
+    Client->>Resource: GET /api/user-data<br/>Authorization: Bearer token
+    Resource->>Resource: Validate token
+    Resource-->>Client: Return protected data
+    Client-->>User: Display protected data
+```
 
-    C->>API: POST /token (client_id, client_secret, auth_code)
-    API->>AS: exchange_auth_code_for_token(auth_code, client_id, client_secret)
-    AS-->>API: access_token
-    API-->>C: access_token
+## OAuth2 Flow Explanation
 
-    C->>API: GET /data (Bearer access_token)
-    API->>AS: validate_token(access_token)
-    AS-->>API: username (if valid)
-    API->>RS: get_user_data(username)
-    RS-->>API: user_data
-    API-->>C: user_data
+1. **Initial Request (Authorization Code Request)**
+   - User clicks "Login" on the client application
+   - Client redirects to Authorization Server with:
+     - client_id
+     - redirect_uri
+     - response_type=code
 
-    Note over C,RS: Flux OAuth2 complet
+2. **Authorization Grant**
+   - Authorization Server validates the request
+   - Generates a temporary authorization code
+   - Redirects back to Client's callback URL with the code
 
-    rect rgb(200, 220, 250)
-        Note over AS: Authorization Server
-        AS->>AS: generate_auth_code()
-        AS->>AS: exchange_auth_code_for_token()
-        AS->>AS: validate_token()
-    end
+3. **Access Token Request**
+   - Client receives the authorization code
+   - Sends to Authorization Server with:
+     - client_id
+     - client_secret
+     - authorization_code
+   - Server validates and returns access token
 
-    rect rgb(220, 250, 200)
-        Note over RS: Resource Server
-        RS->>RS: get_user_data()
-    end
+4. **Resource Access**
+   - Client uses access token to request protected resources
+   - Resource Server validates token
+   - Returns requested data if token is valid
 
-    rect rgb(250, 220, 200)
-        Note over API: API (Flask)
-        API->>API: /auth endpoint
-        API->>API: /token endpoint
-        API->>API: /data endpoint
-    end
-````
-## Intérêt de l'Oauth2
+## Installation
 
-| Avantage | Description | Implémentation dans notre exemple |
-|----------|-------------|-----------------------------------|
-| Séparation des responsabilités | Divise les fonctionnalités entre différents composants | Utilisation de fichiers séparés : `auth_server.py`, `resource_server.py`, `api.py`, `client.py` |
-| Sécurité améliorée | Protège les identifiants de l'utilisateur et limite l'exposition des données | Le client n'a jamais accès direct aux données de l'utilisateur, utilisation de jetons d'accès |
-| Autorisation granulaire | Permet un contrôle fin de l'accès aux ressources | Possibilité d'ajouter des portées (scopes) pour différents niveaux d'accès |
-| Révocation facile | Permet de révoquer l'accès sans changer les identifiants | Possibilité d'implémenter une fonction pour invalider les jetons |
-| Interopérabilité | Facilite l'intégration avec d'autres services | L'implémentation suit les principes de base d'OAuth2 |
-| Expérience utilisateur améliorée | Simplifie le processus d'authentification pour l'utilisateur | L'utilisateur n'a pas à partager ses identifiants avec le client |
-| Flexibilité | S'adapte à différents types d'applications et de flux | Structure modulaire permettant d'ajouter facilement de nouveaux flux |
-| Audit et traçabilité | Permet de suivre et d'auditer les accès | Possibilité d'ajouter des métadonnées aux jetons pour le suivi |
-| Évolutivité | Permet une mise à l'échelle indépendante des composants | Chaque composant (auth, ressources, API) peut être mis à l'échelle séparément |
-| Conformité | Aide à se conformer aux réglementations sur la protection des données | Limite l'exposition des informations sensibles de l'utilisateur |
+1. **Prerequisites**
+   - Python 3.7 or higher
+   - pip (Python package manager)
+   - Terminal/Command Prompt
 
-## Avertissement
+2. **Setup Virtual Environment**
+   ```bash
+   # Create virtual environment
+   python3 -m venv .venv
 
-Cette implémentation est simplifiée et ne comprend pas toutes les vérifications de sécurité qu'un vrai système OAuth2 devrait avoir. Elle sert principalement à illustrer les concepts de base du flux OAuth2 et ne doit pas être utilisée en production.
+   # Activate virtual environment
+   # On macOS/Linux:
+   source .venv/bin/activate
+   # On Windows:
+   .venv\Scripts\activate
+   ```
 
-## Contribution
+3. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Les contributions à ce projet sont les bienvenues. N'hésitez pas à ouvrir une issue ou à soumettre une pull request si vous avez des suggestions d'amélioration.
+## Running the Demo
+
+1. **Start Authorization Server**
+   ```bash
+   # Terminal 1
+   python auth_server/auth_server.py
+   ```
+
+2. **Start Resource Server**
+   ```bash
+   # Terminal 2
+   python resource_server/resource_server.py
+   ```
+
+3. **Start Client Application**
+   ```bash
+   # Terminal 3
+   python client_app/client_app.py
+   ```
+
+4. **Access the Application**
+   - Open browser to http://localhost:5052
+   - Click "Login with OAuth2"
+   - Watch the process in both browser and terminal logs
+
+## Component Details
+
+### Authorization Server (Port 5050)
+- **Purpose**: Handles authentication and authorization
+- **Endpoints**:
+  - GET `/authorize`: Initial authorization endpoint
+  - POST `/token`: Token exchange endpoint
+- **Features**:
+  - Generates authorization codes
+  - Issues access tokens
+  - Validates client credentials
+
+### Resource Server (Port 5051)
+- **Purpose**: Protects and serves resources
+- **Endpoints**:
+  - GET `/api/user-data`: Protected resource endpoint
+- **Features**:
+  - Token validation
+  - Protected data access
+  - Detailed request logging
+
+### Client Application (Port 5052)
+- **Purpose**: Demonstrates OAuth2 flow
+- **Endpoints**:
+  - GET `/`: Homepage with login button
+  - GET `/callback`: OAuth2 callback handler
+- **Features**:
+  - Visual step tracking
+  - Detailed logging
+  - Token management
+
+## Understanding the Code
+
+### Key Files
+```
+oauth2/
+├── auth_server/
+│   └── auth_server.py      # Authorization server implementation
+├── resource_server/
+│   └── resource_server.py  # Protected resource server
+├── client_app/
+│   ├── client_app.py       # OAuth2 client implementation
+│   └── templates/          # HTML templates for visualization
+└── requirements.txt        # Project dependencies
+```
+
+### Important Code Sections
+
+1. **Authorization Code Generation**
+   ```python
+   # In auth_server.py
+   auth_code = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+   auth_codes[auth_code] = {
+       'client_id': client_id,
+       'expires': time.time() + 600  # 10 minutes expiration
+   }
+   ```
+
+2. **Token Exchange**
+   ```python
+   # In auth_server.py
+   access_token = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+   tokens[access_token] = {
+       'client_id': client_id,
+       'expires': time.time() + 3600  # 1 hour expiration
+   }
+   ```
+
+3. **Protected Resource Access**
+   ```python
+   # In resource_server.py
+   @app.route('/api/user-data')
+   def get_user_data():
+       auth_header = request.headers.get('Authorization')
+       if not auth_header or not auth_header.startswith('Bearer '):
+           return jsonify({"error": "Missing or invalid authorization header"}), 401
+       # ... token validation and data return
+   ```
+
+## Security Considerations
+
+This is a demonstration project with several simplifications:
+
+1. **Storage**
+   - Uses in-memory storage instead of a database
+   - No persistent user or token storage
+
+2. **Token Security**
+   - Simple token generation
+   - Basic validation mechanisms
+   - No token encryption
+
+3. **Authentication**
+   - No real user authentication
+   - Simplified client credentials
+
+4. **Production Requirements**
+   - Add SSL/TLS
+   - Implement proper data storage
+   - Add rate limiting
+   - Enhance token security
+   - Add proper error handling
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Port Conflicts**
+   ```bash
+   # Check for used ports
+   lsof -i :5050,5051,5052   # On macOS/Linux
+   netstat -ano | findstr "5050 5051 5052"  # On Windows
+   ```
+
+2. **Server Not Starting**
+   - Ensure virtual environment is activated
+   - Verify all dependencies are installed
+   - Check port availability
+
+3. **Authorization Fails**
+   - Verify all three servers are running
+   - Check client_id and client_secret
+   - Ensure redirect_uri matches exactly
+
+### Logging
+
+All components include detailed logging:
+```python
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - [SERVER] %(message)s'
+)
+```
+
+Monitor the terminal output to understand the flow and diagnose issues.
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!

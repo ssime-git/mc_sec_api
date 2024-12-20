@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth2 Success</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .step {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .step.completed {
+            border-color: #4CAF50;
+            background-color: #E8F5E9;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .checkmark {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>OAuth2 Flow Complete! 🎉</h1>
+    
+    <div class="step completed">
+        <h3><span class="checkmark">✓</span> Step 1: Started OAuth Flow</h3>
+        <p>You were redirected to the Authorization Server with:</p>
+        <div class="code-block">
+            client_id: "{{ client_id }}"<br>
+            redirect_uri: "{{ redirect_uri }}"
+        </div>
+    </div>
+
+    <div class="step completed">
+        <h3><span class="checkmark">✓</span> Step 2: Received Authorization Code</h3>
+        <p>The Authorization Server validated our request and sent:</p>
+        <div class="code-block">
+            authorization_code: "{{ auth_code }}"
+        </div>
+    </div>
+
+    <div class="step completed">
+        <h3><span class="checkmark">✓</span> Step 3: Exchanged for Access Token</h3>
+        <p>We exchanged the authorization code for an access token:</p>
+        <div class="code-block">
+            access_token: "{{ access_token }}"<br>
+            (Valid for 1 hour)
+        </div>
+    </div>
+
+    <div class="step completed">
+        <h3><span class="checkmark">✓</span> Step 4: Accessed Protected Resource</h3>
+        <p>We used the access token to request protected data from the Resource Server:</p>
+        {% if user_data %}
+            <table class="data-table">
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+                {% for key, value in user_data.items() %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No user data available</p>
+        {% endif %}
+        <p>Request details:</p>
+        <div class="code-block">
+            GET http://localhost:5051/api/user-data<br>
+            Authorization: Bearer {{ access_token }}
+        </div>
+    </div>
+
+    <p><a href="/" style="color: #4CAF50;">← Start Over</a></p>
+</body>
+</html>

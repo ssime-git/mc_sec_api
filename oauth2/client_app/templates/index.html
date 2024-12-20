@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth2 Demo Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .step {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .step.active {
+            border-color: #4CAF50;
+            background-color: #E8F5E9;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>OAuth2 Flow Demonstration</h1>
+    
+    <div class="step active" id="step1">
+        <h3>Step 1: Start OAuth Flow</h3>
+        <p>When you click the login button below, the following will happen:</p>
+        <ol>
+            <li>You'll be redirected to the Authorization Server (localhost:5050)</li>
+            <li>The request will include:
+                <div class="code-block">
+                    client_id: "myclient"<br>
+                    redirect_uri: "http://localhost:5052/callback"
+                </div>
+            </li>
+        </ol>
+        <a href="/start_oauth" class="button">Login with OAuth2</a>
+    </div>
+
+    <div class="step" id="step2">
+        <h3>Step 2: Authorization Server Response</h3>
+        <p>The Authorization Server will:</p>
+        <ol>
+            <li>Validate the client_id and redirect_uri</li>
+            <li>Generate an authorization code</li>
+            <li>Redirect back to our callback URL with the code</li>
+        </ol>
+    </div>
+
+    <div class="step" id="step3">
+        <h3>Step 3: Token Exchange</h3>
+        <p>Our application will:</p>
+        <ol>
+            <li>Receive the authorization code</li>
+            <li>Send it back to the Authorization Server with:
+                <div class="code-block">
+                    client_id: "myclient"<br>
+                    client_secret: "mysecret"<br>
+                    auth_code: "[received_code]"
+                </div>
+            </li>
+            <li>Receive and store the access token</li>
+        </ol>
+    </div>
+
+    <div class="step" id="step4">
+        <h3>Step 4: Success!</h3>
+        <p>If everything works:</p>
+        <ol>
+            <li>We'll have an access token stored in the session</li>
+            <li>This token can be used to access protected resources</li>
+            <li>The token will be valid for 1 hour</li>
+        </ol>
+    </div>
+
+</body>
+</html>
