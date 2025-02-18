@@ -223,17 +223,16 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.104.1"
+version = "0.115.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "anyio" },
     { name = "pydantic" },
     { name = "starlette" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d9/d8/002e0ba7cf848a981b3ee92aaf5aa396c5700b0d7dec5d060031432a87d8/fastapi-0.104.1.tar.gz", hash = "sha256:e5e4540a7c5e1dcfbbcf5b903c234feddcdcd881f191977a1c5dfd917487e7ae", size = 11295150 }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/b2/5a5dc4affdb6661dea100324e19a7721d5dc524b464fe8e366c093fd7d87/fastapi-0.115.8.tar.gz", hash = "sha256:0ce9111231720190473e222cdf0f07f7206ad7e53ea02beb1d2dc36e2f0741e9", size = 295403 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f3/4f/0ce34195b63240b6693086496c9bab4ef23999112184399a3e88854c7674/fastapi-0.104.1-py3-none-any.whl", hash = "sha256:752dc31160cdbd0436bb93bad51560b57e525cbb1d4bbf6f4904ceee75548241", size = 92862 },
+    { url = "https://files.pythonhosted.org/packages/8f/7d/2d6ce181d7a5f51dedb8c06206cbf0ec026a99bf145edd309f9e17c3282f/fastapi-0.115.8-py3-none-any.whl", hash = "sha256:753a96dd7e036b34eeef8babdfcfe3f28ff79648f86551eb36bfc1b0bf4a8cbf", size = 94814 },
 ]
 
 [[package]]
@@ -445,14 +444,13 @@ dependencies = [
     { name = "python-multipart" },
     { name = "requests" },
     { name = "scikit-learn" },
-    { name = "uvicorn" },
     { name = "werkzeug" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "cryptography", specifier = "==41.0.5" },
-    { name = "fastapi", specifier = "==0.104.1" },
+    { name = "fastapi", specifier = "==0.115.8" },
     { name = "flask", specifier = "==2.3.3" },
     { name = "flask-cors", specifier = "==4.0.0" },
     { name = "joblib", specifier = "==1.3.2" },
@@ -461,12 +459,11 @@ requires-dist = [
     { name = "pip", specifier = ">=25.0.1" },
     { name = "pyjwt", specifier = "==2.8.0" },
     { name = "python-dotenv", specifier = "==1.0.0" },
-    { name = "python-fasthtml", specifier = "==0.1.0" },
+    { name = "python-fasthtml", specifier = "==0.12.1" },
     { name = "python-jose", extras = ["cryptography"], specifier = "==3.3.0" },
     { name = "python-multipart", specifier = "==0.0.6" },
     { name = "requests", specifier = "==2.31.0" },
     { name = "scikit-learn", specifier = "==1.3.2" },
-    { name = "uvicorn", specifier = "==0.24.0" },
     { name = "werkzeug", specifier = "==2.3.7" },
 ]
 
@@ -630,7 +627,7 @@ wheels = [
 
 [[package]]
 name = "python-fasthtml"
-version = "0.1.0"
+version = "0.12.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -644,9 +641,9 @@ dependencies = [
     { name = "starlette" },
     { name = "uvicorn", extra = ["standard"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3e/57/cfe9e3a9972ee5ee7b27395bc0be446c4048ebf11af9f35be8d18dcdf349/python-fasthtml-0.1.0.tar.gz", hash = "sha256:466781e2bf018f0edddec09fdf736692e0e7b72ff8f29be31f1989501610f417", size = 35378 }
+sdist = { url = "https://files.pythonhosted.org/packages/c5/68/ad5465c174ff934814303af17f6839a901a4a3e287857e83080807471cfd/python_fasthtml-0.12.1.tar.gz", hash = "sha256:29b54df1bed9063c32fa320f57487887ce8bf846838b441a67d6c1ebe1caadc5", size = 58697 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d0/89/1f62856d2ffa07dfba2dea3f3099d20e40a0da30d7aa7d98e7e85fa1ec01/python_fasthtml-0.1.0-py3-none-any.whl", hash = "sha256:39d8595304e6b81c364d55caaf2d1d4ac92ff3d05fb0bf374bcd4389d55e5ad2", size = 34571 },
+    { url = "https://files.pythonhosted.org/packages/62/2a/2906ab68d03d7d6bf397cfd402649d6a27b4065addbff30efc2d147e9f2c/python_fasthtml-0.12.1-py3-none-any.whl", hash = "sha256:6eabaadf826b19a07851750361a160cc8e986ad1d96c42cc64439315dd3c4c99", size = 61009 },
 ]
 
 [[package]]
@@ -816,14 +813,14 @@ wheels = [
 
 [[package]]
 name = "starlette"
-version = "0.27.0"
+version = "0.45.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/06/68/559bed5484e746f1ab2ebbe22312f2c25ec62e4b534916d41a8c21147bf8/starlette-0.27.0.tar.gz", hash = "sha256:6a6b0d042acb8d469a01eba54e9cda6cbd24ac602c4cd016723117d6a7e73b75", size = 51394 }
+sdist = { url = "https://files.pythonhosted.org/packages/ff/fb/2984a686808b89a6781526129a4b51266f678b2d2b97ab2d325e56116df8/starlette-0.45.3.tar.gz", hash = "sha256:2cbcba2a75806f8a41c722141486f37c28e30a0921c5f6fe4346cb0dcee1302f", size = 2574076 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/f8/e2cca22387965584a409795913b774235752be4176d276714e15e1a58884/starlette-0.27.0-py3-none-any.whl", hash = "sha256:918416370e846586541235ccd38a474c08b80443ed31c578a418e2209b3eef91", size = 66978 },
+    { url = "https://files.pythonhosted.org/packages/d9/61/f2b52e107b1fc8944b33ef56bf6ac4ebbe16d91b94d2b87ce013bf63fb84/starlette-0.45.3-py3-none-any.whl", hash = "sha256:dfb6d332576f136ec740296c7e8bb8c8a7125044e7c6da30744718880cdd059d", size = 71507 },
 ]
 
 [[package]]
@@ -855,15 +852,15 @@ wheels = [
 
 [[package]]
 name = "uvicorn"
-version = "0.24.0"
+version = "0.34.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "h11" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/af/c9/dc0b3b6f944271d5f71564c2db08a1879a384cda7100f6f2f71b4ec9b751/uvicorn-0.24.0.tar.gz", hash = "sha256:368d5d81520a51be96431845169c225d771c9dd22a58613e1a181e6c4512ac33", size = 40092 }
+sdist = { url = "https://files.pythonhosted.org/packages/4b/4d/938bd85e5bf2edeec766267a5015ad969730bb91e31b44021dfe8b22df6c/uvicorn-0.34.0.tar.gz", hash = "sha256:404051050cd7e905de2c9a7e61790943440b3416f49cb409f965d9dcd0fa73e9", size = 76568 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/0c/a9b90a856bbdd75bf71a1dd191af1e9c9ac8a272ed337f7200950c3d3dd4/uvicorn-0.24.0-py3-none-any.whl", hash = "sha256:3d19f13dfd2c2af1bfe34dd0f7155118ce689425fdf931177abe832ca44b8a04", size = 59609 },
+    { url = "https://files.pythonhosted.org/packages/61/14/33a3a1352cfa71812a3a21e8c9bfb83f60b0011f5e36f2b1399d51928209/uvicorn-0.34.0-py3-none-any.whl", hash = "sha256:023dc038422502fa28a09c7a30bf2b6991512da7dcdb8fd35fe57cfc154126f4", size = 62315 },
 ]
 
 [package.optional-dependencies]

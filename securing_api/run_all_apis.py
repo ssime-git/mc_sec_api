@@ -6,6 +6,7 @@ import time
 from dotenv import load_dotenv
 import logging
 from fasthtml.common import *
+import threading
 from components import (
     ApiCard, ApiForm, get_styles, get_scripts,
     get_level1_fields, get_level2_fields,
@@ -43,10 +44,10 @@ def home():
                     "Basic implementation with embedded encryption key (not recommended for production)",
                     ["Simple Fernet encryption", "Key embedded in code", "Basic data protection"],
                     ["Move encryption key to environment variables", "Implement proper key rotation", "Add request validation"],
-                    '''curl -X POST "http://localhost:8000/predict/" -H "Content-Type: application/json" -d '{"data": "secret"}'
-curl -X POST "http://localhost:8000/decrypt/" -H "Content-Type: application/json" -d '{"encrypted_data": "..."}'
+                    '''curl -X POST "http://localhost:8001/predict/" -H "Content-Type: application/json" -d '{"data": "secret"}'
+curl -X POST "http://localhost:8001/decrypt/" -H "Content-Type: application/json" -d '{"encrypted_data": "..."}'
 ''',
-                    8000
+                    8001
                 ),
                 H3("Try it out:"),
                 ApiForm("level1Form", "Submit", "submitLevel1Form()", get_level1_fields()),
@@ -121,7 +122,7 @@ curl -X POST "http://localhost:8003/predict/" -H "Authorization: Bearer YOUR_TOK
 
 def run_level1():
     logger.info("Starting Level 1 API server...")
-    uvicorn.run("1_clear_embedded_encryption:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("1_clear_embedded_encryption:app", host="0.0.0.0", port=8001, reload=False)
 
 def run_level2():
     logger.info("Starting Level 2 API server...")

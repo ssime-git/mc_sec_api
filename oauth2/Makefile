@@ -9,7 +9,7 @@ run-auth:
 run-resource:
 	python resource_server/resource_server.py
 
-run-demo:
+run:
 	python run_demo.py
 
 clean:
