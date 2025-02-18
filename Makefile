@@ -1,5 +1,5 @@
 install:
-	pip install -r requirements.txt
+	python run_all_apis.py
 
-attempt1:
-	python clear_encryption_key.py
+clean:
+	find . -type d -name "__pycache__" -exec rm -r {} +

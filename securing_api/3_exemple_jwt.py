@@ -1,20 +1,31 @@
 import joblib
 import hashlib
+from datetime import datetime, timedelta
+from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from hashlib import sha256
+from cryptography.fernet import Fernet
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
-import joblib
+import jwt
+from passlib.context import CryptContext
+from hashlib import sha256
 import json
 import os
-from datetime import datetime, timedelta
-import jwt
-from cryptography.fernet import Fernet
 
 app = FastAPI()
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Constants
 JSON_FILE_PATH = os.path.expanduser("./users/users.json")

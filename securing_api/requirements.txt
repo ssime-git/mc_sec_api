@@ -1,15 +1,16 @@
-scikit-learn
-fastapi
-cryptography
-uvicorn
-pydantic
-cryptography
-numpy
-joblib
-python-dotenv
 ## never use jwt in addition to the one below see : https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode
-PyJWT
-python-multipart
+fastapi==0.104.1
+uvicorn==0.24.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+scikit-learn==1.3.2
+joblib==1.3.2
+cryptography==41.0.5
+python-dotenv==1.0.0
+python-fasthtml==0.12.1
+pyjwt==2.8.0
+numpy
 flask==2.3.3
 werkzeug==2.3.7
 requests==2.31.0
