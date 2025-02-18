@@ -7,6 +7,7 @@ This server protects resources and validates access tokens with the Authorizatio
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import logging
+import requests
 
 # Set up logging
 logging.basicConfig(
@@ -17,6 +18,9 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
+
+# Auth server configuration
+AUTH_SERVER_URL = "http://localhost:5050"
 
 # Sample protected data
 PROTECTED_DATA = {
@@ -31,6 +35,28 @@ PROTECTED_DATA = {
         "subscription": "basic"
     }
 }
+
+def validate_token(access_token):
+    """
+    Validate the access token with the Authorization Server
+    Returns (is_valid, error_message)
+    """
+    try:
+        response = requests.post(
+            f"{AUTH_SERVER_URL}/validate",
+            json={"access_token": access_token},
+            timeout=5
+        )
+        
+        if response.status_code == 200:
+            return True, None
+        else:
+            error_data = response.json()
+            return False, error_data.get("error", "Token validation failed")
+            
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error communicating with auth server: {str(e)}")
+        return False, "Error validating token with authorization server"
 
 @app.route('/')
 def index():
@@ -51,23 +77,19 @@ def get_user_data():
     access_token = auth_header.split(' ')[1]
     logger.info(f"Received access token: {access_token}")
     
-    # In a real application, we would validate the token with the Authorization Server
-    # For this demo, we'll accept any token and return sample data
-    try:
-        # Simulate token validation
-        if access_token:
-            logger.info("Token is valid, returning protected data")
-            return jsonify({
-                "message": "Access granted!",
-                "data": PROTECTED_DATA["user1"]  # Return sample data
-            })
-        else:
-            logger.error("Invalid token")
-            return jsonify({"error": "Invalid token"}), 401
-            
-    except Exception as e:
-        logger.error(f"Error processing request: {str(e)}")
-        return jsonify({"error": "Internal server error"}), 500
+    # Validate the token with the Authorization Server
+    is_valid, error = validate_token(access_token)
+    
+    if not is_valid:
+        logger.error(f"Token validation failed: {error}")
+        return jsonify({"error": error}), 401
+    
+    # If we get here, the token is valid
+    logger.info("Token is valid, returning protected data")
+    return jsonify({
+        "message": "Access granted!",
+        "data": PROTECTED_DATA
+    })
 
 if __name__ == '__main__':
     logger.info("Starting OAuth 2.0 Resource Server on port 5051")

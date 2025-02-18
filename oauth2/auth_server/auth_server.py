@@ -138,6 +138,46 @@ def token():
         logger.error(f"Error during token exchange: {str(e)}")
         return jsonify({"error": "Server error"}), 500
 
+@app.route('/validate', methods=['POST'])
+def validate_token():
+    """
+    Token validation endpoint
+    
+    Resource servers call this endpoint to validate access tokens
+    Returns token information if valid, error if not
+    """
+    logger.info("=== Token Validation Request ===")
+    
+    try:
+        data = request.json
+        access_token = data.get('access_token')
+        
+        logger.info(f"Validating access token: {access_token}")
+        
+        # Check if token exists
+        if not access_token or access_token not in tokens:
+            logger.error("Invalid access token")
+            return jsonify({"valid": False, "error": "Invalid token"}), 401
+            
+        # Check if token has expired
+        token_data = tokens[access_token]
+        if time.time() > token_data['expires']:
+            logger.error("Token has expired")
+            # Remove expired token
+            del tokens[access_token]
+            return jsonify({"valid": False, "error": "Token expired"}), 401
+        
+        logger.info("Token is valid!")
+        return jsonify({
+            "valid": True,
+            "client_id": token_data['client_id'],
+            "expires": token_data['expires']
+        })
+        
+    except Exception as e:
+        logger.error(f"Error during token validation: {str(e)}")
+        return jsonify({"valid": False, "error": "Server error"}), 500
+
 if __name__ == '__main__':
     logger.info("Starting OAuth 2.0 Authorization Server on port 5050")
     app.run(port=5050, debug=True)

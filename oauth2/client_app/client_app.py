@@ -100,17 +100,30 @@ def callback():
     
     # 4. Get protected user data from resource server
     logger.info("=== Step 4: Accessing Protected Resource ===")
+    
+    logger.info("Sending request to Resource Server with access token")
     resource_response = requests.get(
         "http://localhost:5051/api/user-data",
         headers={"Authorization": f"Bearer {access_token}"}
     )
     
-    if resource_response.status_code != 200:
+    if resource_response.status_code == 401:
+        logger.error("Token validation failed at Resource Server")
+        error_msg = resource_response.json().get('error', 'Token validation failed')
+        return render_template('success.html',
+                             client_id=CLIENT_ID,
+                             redirect_uri=REDIRECT_URI,
+                             auth_code=auth_code,
+                             access_token=access_token,
+                             validation_error=error_msg)
+    elif resource_response.status_code != 200:
         logger.error(f"Failed to get user data: {resource_response.text}")
         user_data = None
+        validation_error = "Failed to get user data"
     else:
         user_data = resource_response.json()['data']
-        logger.info("Successfully retrieved user data from resource server")
+        validation_error = None
+        logger.info("Successfully retrieved user data - token validated by Auth Server")
     
     logger.info("OAuth flow completed successfully!")
     
@@ -120,7 +133,8 @@ def callback():
                          redirect_uri=REDIRECT_URI,
                          auth_code=auth_code,
                          access_token=access_token,
-                         user_data=user_data)
+                         user_data=user_data,
+                         validation_error=validation_error)
 
 if __name__ == '__main__':
     logger.info("Starting OAuth 2.0 Client Application on port 5052")

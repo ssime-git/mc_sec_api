@@ -9,5 +9,8 @@ joblib
 python-dotenv
 ## never use jwt in addition to the one below see : https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode
 PyJWT
-requests
 python-multipart
+flask==2.3.3
+werkzeug==2.3.7
+requests==2.31.0
+flask-cors==4.0.0

@@ -35,21 +35,31 @@ sequenceDiagram
     User->>Client: Click "Login with OAuth2"
     Client->>Auth: GET /authorize<br/>client_id=myclient<br/>redirect_uri=http://localhost:5052/callback
     
-    Note over User,Resource: Step 2: Authorization
-    Auth->>Auth: Validate client_id<br/>and redirect_uri
+    Note over User,Resource: Step 2: Authorization & Consent
+    Auth->>Auth: 1️⃣ Validate client_id<br/>and redirect_uri
+    Auth->>User: Display consent screen
+    User->>Auth: Grant permission
     Auth->>Auth: Generate auth code
     Auth-->>Client: Redirect with auth_code
     
     Note over User,Resource: Step 3: Token Exchange
     Client->>Auth: POST /token<br/>client_id, client_secret, auth_code
-    Auth->>Auth: Validate credentials<br/>and auth_code
+    Auth->>Auth: 2️⃣ Validate client credentials
+    Auth->>Auth: 3️⃣ Validate auth_code<br/>and check expiration
     Auth-->>Client: Return access_token
     
     Note over User,Resource: Step 4: Access Protected Resource
     Client->>Resource: GET /api/user-data<br/>Authorization: Bearer token
-    Resource->>Resource: Validate token
-    Resource-->>Client: Return protected data
-    Client-->>User: Display protected data
+    Resource->>Auth: POST /validate<br/>4️⃣ Validate access_token
+    Auth->>Auth: 5️⃣ Check token exists<br/>and not expired
+    Auth-->>Resource: Token validation result<br/>(valid/invalid + metadata)
+    alt Token Valid
+        Resource-->>Client: Return protected data
+        Client-->>User: Display protected data
+    else Token Invalid
+        Resource-->>Client: Return 401 Unauthorized
+        Client-->>User: Show error message
+    end
 ```
 
 ## OAuth2 Flow Explanation
@@ -61,9 +71,11 @@ sequenceDiagram
      - redirect_uri
      - response_type=code
 
-2. **Authorization Grant**
+2. **Authorization Grant & User Consent**
    - Authorization Server validates the request
-   - Generates a temporary authorization code
+   - User is presented with a consent screen
+   - User explicitly grants permission
+   - Server generates a temporary authorization code
    - Redirects back to Client's callback URL with the code
 
 3. **Access Token Request**
@@ -74,10 +86,11 @@ sequenceDiagram
      - authorization_code
    - Server validates and returns access token
 
-4. **Resource Access**
+4. **Resource Access with Token Validation**
    - Client uses access token to request protected resources
-   - Resource Server validates token
-   - Returns requested data if token is valid
+   - Resource Server validates token by calling Auth Server's /validate endpoint
+   - Auth Server verifies token validity and expiration
+   - Resource Server returns requested data if token is valid
 
 ## Installation
 
@@ -131,33 +144,22 @@ sequenceDiagram
 ## Component Details
 
 ### Authorization Server (Port 5050)
-- **Purpose**: Handles authentication and authorization
-- **Endpoints**:
-  - GET `/authorize`: Initial authorization endpoint
-  - POST `/token`: Token exchange endpoint
-- **Features**:
-  - Generates authorization codes
-  - Issues access tokens
-  - Validates client credentials
+- Handles client registration and validation
+- Manages user consent and authorization
+- Issues and validates access tokens
+- Provides `/authorize`, `/token`, and `/validate` endpoints
+- Maintains token state and expiration
 
 ### Resource Server (Port 5051)
-- **Purpose**: Protects and serves resources
-- **Endpoints**:
-  - GET `/api/user-data`: Protected resource endpoint
-- **Features**:
-  - Token validation
-  - Protected data access
-  - Detailed request logging
+- Protects sensitive resources
+- Validates access tokens with Auth Server
+- Implements proper token validation through Auth Server's `/validate` endpoint
+- Returns protected data only after successful token validation
 
 ### Client Application (Port 5052)
-- **Purpose**: Demonstrates OAuth2 flow
-- **Endpoints**:
-  - GET `/`: Homepage with login button
-  - GET `/callback`: OAuth2 callback handler
-- **Features**:
-  - Visual step tracking
-  - Detailed logging
-  - Token management
+- Demonstrates OAuth2 flow
+- Implements client-side logic for authorization and token management
+- Visualizes the OAuth2 flow for educational purposes
 
 ## Understanding the Code
 
@@ -196,15 +198,59 @@ oauth2/
    }
    ```
 
-3. **Protected Resource Access**
+3. **Protected Resource Access with Token Validation**
    ```python
    # In resource_server.py
+   def validate_token(access_token):
+       """
+       Validate the access token with the Authorization Server
+       Returns (is_valid, error_message)
+       """
+       try:
+           response = requests.post(
+               f"{AUTH_SERVER_URL}/validate",
+               json={"access_token": access_token},
+               timeout=5
+           )
+           
+           if response.status_code == 200:
+               return True, None
+           else:
+               error_data = response.json()
+               return False, error_data.get("error", "Token validation failed")
+               
+       except requests.exceptions.RequestException as e:
+           logger.error(f"Error communicating with auth server: {str(e)}")
+           return False, "Error validating token with authorization server"
+
    @app.route('/api/user-data')
    def get_user_data():
+       """Protected endpoint that requires a valid access token"""
+       logger.info("Received request for protected user data")
+       
+       # Get the authorization header
        auth_header = request.headers.get('Authorization')
        if not auth_header or not auth_header.startswith('Bearer '):
+           logger.error("No valid authorization header found")
            return jsonify({"error": "Missing or invalid authorization header"}), 401
-       # ... token validation and data return
+
+       # Extract the token
+       access_token = auth_header.split(' ')[1]
+       logger.info(f"Received access token: {access_token}")
+       
+       # Validate the token with the Authorization Server
+       is_valid, error = validate_token(access_token)
+       
+       if not is_valid:
+           logger.error(f"Token validation failed: {error}")
+           return jsonify({"error": error}), 401
+       
+       # If we get here, the token is valid
+       logger.info("Token is valid, returning protected data")
+       return jsonify({
+           "message": "Access granted!",
+           "data": PROTECTED_DATA
+       })
    ```
 
 ## Security Considerations
