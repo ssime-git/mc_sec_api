@@ -1,34 +1,59 @@
 # Securing API
 
+This repo is used for demo purpose during the masterclass `API Security`. Here are the ressources :
+* [slides](https://docs.google.com/presentation/d/1LmQAB2wKJdoj7cNDC6G40Jfd6m3r5xt_/edit#slide=id.g2e34f6b7219_0_189)
+* **Special attention** : Never install `jwt`and `PyJWT`package at the same time. See [this thread](https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode) on stackoverflow.
+
 ## 1. Setup
+
+We are using `uv` to create the virtual environment. For more details about `uv`, you can check the [doc](https://docs.astral.sh/uv/getting-started/installation/).
 
 Run the following commands to set up the environment:
 
 ```sh
+# Clone the repo
+git clone https://github.com/ssime-git/mc_sec_api.git
+
+# create a venv
+uv venv
+
+# Activate the venv
+source  .venv/bin/activate
+
+# install all the dependencies
+uv sync
+
+# get into the repo
 cd securing_api
-python -m venv .sec_env
-source  .sec_venv/bin/activate
-pip install -r requirements.txt
 ```
-> ** Special attention** : Never install `jwt`and `PyJWT`package at the same time. See [this thread](https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode) on stackoverflow.
->
-> Checkout the content of the `requirements.txt` file.
 
 Now, we will try to secure a very basic API.
 
-## 2. API V0 : Security attempt 1
+## 2. Securing API
+
+For the demo purpose, we created 3 API's with each having pros and cons. You will find some details (in french, english is coming...) [here](securing_api/demonstration_fr.md).
+
+All the scripts can be find in `securing_api/` folder.
+
+### 2.1 API V1
 
 Run the script:
 
 ```sh
-# Running the script
-python 1_clear_embedded_encryption.py
+# Enter the dedicated folder
+cd securing_api/
+
+# Run all the APIs at once
+make run
 ```
 
-### Testing the API :
+The last commands, will run a `fastHTML` app with some interaction with the 3 APIs.
+
+#### Testing the API v0
+
 To test the API, you can use various tools such as `curl`, Postman, or Python scripts. Below, I'll provide examples for each method to test the `/predict/`, `/pseudonymize/`, and `/decrypt/{user_id}` endpoints.
 
-#### Using `curl`
+##### Using `curl`
 
 1. **Test `/predict/` endpoint:**
 
@@ -56,13 +81,13 @@ curl -X GET "http://localhost:8000/pseudonymize/"
 curl -X GET "http://localhost:8000/decrypt/0"
 ```
 
-#### Using Postman
+##### Using Postman or FastAPI interface
 
 1. **Test `/predict/` endpoint:**
-    - Open Postman.
-    - Create a new POST request with URL: `http://localhost:8000/predict/`.
-    - Set the request body to `raw` and `JSON` format.
-    - Use the following JSON body:
+    * Open Postman.
+    * Create a new POST request with URL: `http://localhost:8000/predict/`.
+    * Set the request body to `raw` and `JSON` format.
+    * Use the following JSON body:
 
     ```json
     {
@@ -76,7 +101,7 @@ curl -X GET "http://localhost:8000/decrypt/0"
     }
     ```
 
-    - Click `Send`.
+    * Click `Send`.
 
 2. **Test `/pseudonymize/` endpoint:**
     - Create a new GET request with URL: `http://localhost:8000/pseudonymize/`.
@@ -86,7 +111,7 @@ curl -X GET "http://localhost:8000/decrypt/0"
     - Create a new GET request with URL: `http://localhost:8000/decrypt/0` (assuming `0` is the user ID).
     - Click `Send`.
 
-#### Using Python Script
+##### Using Python Script
 
 1. **Test `/predict/` endpoint:**
 
@@ -127,40 +152,33 @@ response = requests.get(url)
 print(response.json())
 ```
 
-### Best Practices Assessment: GDPR and Security
+#### Best Practices Assessment: GDPR and Security
 
 The used code demonstrates some good practices and areas for improvement in terms of GDPR and security. Let's break it down:
 
 **Good Practices:**
 
-* **Data Minimization:** The code only collects essential user data (first name, last name, email, age, sex, favorite color, and favorite food) for the prediction task. This minimizes the amount of personal data collected, adhering to the GDPR principle of data minimization.
-* **Pseudonymization:** The `/pseudonymize/` endpoint pseudonymizes user data by hashing the encrypted data, making it difficult to link back to the individual user. This is a good step towards achieving data anonymization and minimizing privacy risks.
-* **Input Validation:** The `validate_user_input` function checks user-provided data against predefined allowed classes, preventing invalid inputs and potential vulnerabilities.
-* **Data Encryption:** The code encrypts user data with Fernet, providing protection against unauthorized access and data breaches.
-* **Consent Implementation:**  The `/` endpoint now includes a simple JavaScript snippet that pops up an alert to the user, asking for consent before using their data. While this approach is basic, it's a good starting point for implementing consent mechanisms.
+| Good Practice | Description |
+|--------------|-------------|
+| Data Minimization | The code only collects essential user data (first name, last name, email, age, sex, favorite color, and favorite food) for the prediction task. This minimizes the amount of personal data collected, adhering to the GDPR principle of data minimization. |
+| Pseudonymization | The `/pseudonymize/` endpoint pseudonymizes user data by hashing the encrypted data, making it difficult to link back to the individual user. This is a good step towards achieving data anonymization and minimizing privacy risks. |
+| Input Validation | The `validate_user_input` function checks user-provided data against predefined allowed classes, preventing invalid inputs and potential vulnerabilities. |
+| Data Encryption | The code encrypts user data with Fernet, providing protection against unauthorized access and data breaches. |
+| Consent Implementation | The `/` endpoint now includes a simple JavaScript snippet that pops up an alert to the user, asking for consent before using their data. While this approach is basic, it's a good starting point for implementing consent mechanisms. |
 
 **Areas for Improvement:**
 
-**GDPR Compliance:**
-
-* **Transparency and Consent:**
-    * The application lacks a clear privacy policy informing users about data collection, processing, and storage.
-    * The code doesn't explicitly obtain consent from users before collecting and processing their personal data. 
-* **Purpose Limitation:**
-    * The application should specify the specific purpose for collecting user data and only process it for that stated purpose.
-* **Data Retention:**
-    * The code doesn't specify a retention policy for user data.  Data should be deleted when no longer needed for the specified purpose.
-* **Data Subject Rights:**
-    * The application should provide mechanisms for users to exercise their rights under GDPR (e.g., access, rectification, erasure, restriction). 
-
-**Security:**
-
-* **Encryption Key Management:**
-    * The `generate_encryption_suite` function generates a new Fernet key on every server restart. This makes it very difficult to decrypt previously encrypted data if the server restarts or crashes. Consider storing the encryption key securely in a separate location, potentially using a Key Management System (KMS).
-* **Secure Storage:**
-    *  The `users` list stores encrypted data in memory. It's crucial to consider a secure storage mechanism for persistence, especially if the application scales. Options include databases, file storage with appropriate permissions, or encrypted storage services.
-* **Input Sanitization:** While the code validates input, it doesn't sanitize the data to prevent potential vulnerabilities such as cross-site scripting (XSS) or SQL injection, which could be exploited if the user input is not properly cleaned before processing.
-* **Authentication and Authorization:** The application doesn't implement any authentication or authorization mechanisms, exposing the entire API to unauthorized access.  Consider adding authentication and authorization methods to control who can access and modify the data. 
+| Area | Issue | Recommendation |
+|------|--------|----------------|
+| GDPR Compliance | Missing privacy policy | Add clear policy for data collection, processing and storage |
+| | Lack of user consent | Implement explicit consent collection before data processing |
+| | No purpose limitation | Specify and enforce specific purpose for data collection |
+| | Missing data retention | Define retention period and auto-deletion policy |
+| | Limited data subject rights | Add mechanisms for data access, rectification and deletion |
+| Security | Key management risk | Store encryption key securely using KMS instead of regenerating |
+| | In-memory data storage | Implement secure persistent storage (database, encrypted files) |
+| | Insufficient input handling | Add data sanitization to prevent XSS and SQL injection |
+| | Missing access controls | Implement authentication and authorization |
 
 **Recommendations:**
 
@@ -172,11 +190,14 @@ The used code demonstrates some good practices and areas for improvement in term
 * Implement a secure encryption key management strategy, considering a Key Management System.
 * Choose a secure storage mechanism for user data, considering persistence, scalability, and security.
 * Sanitize user input before processing to prevent potential vulnerabilities.
-* Add authentication and authorization mechanisms to control access to the API. 
+* Add authentication and authorization mechanisms to control access to the API.
 
-By addressing these issues, the code can significantly improve its compliance with GDPR and security best practices, ensuring user privacy and data protection. 
+By addressing these issues, the code can significantly improve its compliance with GDPR and security best practices, ensuring user privacy and data protection.
 
-### About Key Management Systems (KMS)
+<details>
+    <summary>about KMS</summary>
+
+#### About Key Management Systems (KMS)
 
 Here are some examples of Key Management Systems (KMS) for managing encryption keys, categorized by pricing and open-source status:
 
@@ -209,11 +230,16 @@ Here are some examples of Key Management Systems (KMS) for managing encryption k
 
 Remember that security is a continuous process. Choose a KMS solution that fits your specific needs, monitor its performance, and regularly update it to ensure the ongoing security of your encryption keys.
 
-## 2.2 API V2 : Securing attempt 2
+</details>
 
-**Same code**, but with an absent key and using a `.env` file to store the encryption key. Suitable for prototype phase, but better with the key stored in a KMS or in the directly define in the production environment.
+### 2.2 API V2
 
-### GDPR considerations
+Here are key changes :
+
+* **Same code**, but with an absent key and using a `.env` file to store the encryption key.
+* Suitable for prototype phase, but better with the key stored in a KMS or in the directly define in the production environment.
+
+#### GDPR considerations
 This version makes a significant improvement by moving the encryption key to an environment variable, addressing one of the key security concerns from the previous version. Let's break down the changes and assess the best practices:
 
 **Improvements:**
@@ -239,7 +265,7 @@ This version makes a significant improvement by moving the encryption key to an 
 * **Consider adding authentication and authorization mechanisms.**  Control access to the API to prevent unauthorized users from accessing or modifying user data.
 
 
-## 2.3 API V3: Simple OAuth : with password bearer (script `3_example_jwt.py`)
+### 2.3 API V3: Simple OAuth : with password bearer (script `3_example_jwt.py`)
 
 OAuth = Set of protocols (auth-code used with several apps interacting at the same time).
 
@@ -247,13 +273,13 @@ To use it, follow the steps below
 
 1. launch the API: `python 3_example_oauth`.
 2. register a user on the `register/` endpoint or use `ssime:test` (username:password already defined)
-3. authenticate with the creds above : 
+3. authenticate with the creds above :
 ![alt text](./report/image.png)
 5. Test the `./precedict` route
 4. The `token` route is simply the way to authenticate programmatically
 ![alt text](./report/image-1.png)
 
-# MLOPS Best Practices for Security and GDPR:
+## MLOPS Best Practices for Security and GDPR:
 
 | MLOPS Stage | Security Best Practices | GDPR Considerations | Requirements |
 |---|---|---|---|
@@ -272,4 +298,6 @@ To use it, follow the steps below
 * **Regular Security Audits:**  Conduct regular security audits to identify vulnerabilities and ensure compliance.
 * **Data Governance Framework:**  Establish a data governance framework with clear policies and processes for managing data privacy and security.
 
-## 2.5 Oauth2 protocol
+## Next level security
+
+Using `OAUTH2` protocol. You can switch to `oauth2/` folder.
