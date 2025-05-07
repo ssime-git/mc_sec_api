@@ -1,0 +1,33 @@
+2025-05-07 07:42:05,211 - USER_REGISTERED - User: apitest - Details: 
+2025-05-07 07:42:05,568 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 07:42:05,596 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 07:42:05,662 - PREDICTION_ERROR - User: apitest - Details: Error: 403
+2025-05-07 07:42:05,688 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 07:43:17,846 - USER_REGISTERED - User: apitest2 - Details: 
+2025-05-07 07:43:18,198 - USER_LOGIN - User: apitest2 - Details: 
+2025-05-07 07:43:18,226 - PSEUDONYMIZATION - User: apitest2 - Details: data pseudonymized
+2025-05-07 07:43:18,282 - PREDICTION_ERROR - User: apitest2 - Details: Error: 403
+2025-05-07 07:43:18,312 - DATA_ACCESS - User: apitest2 - Details: 
+2025-05-07 07:44:32,155 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 07:44:32,180 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 07:44:32,236 - PREDICTION_ERROR - User: apitest - Details: Error: 400
+2025-05-07 07:44:32,264 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 07:45:18,139 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 07:45:18,166 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 07:45:18,221 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 07:45:18,238 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 08:00:59,647 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 08:00:59,675 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 08:00:59,696 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 08:00:59,739 - PREDICTION_ERROR - User: apitest - Details: Error: 400
+2025-05-07 08:00:59,771 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 08:02:46,434 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 08:02:46,459 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 08:02:46,478 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 08:02:46,523 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 08:02:46,541 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 08:03:48,182 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 08:03:48,204 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 08:03:48,221 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 08:03:48,260 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 08:03:48,275 - DATA_ACCESS - User: apitest - Details: 

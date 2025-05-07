@@ -1,0 +1,14 @@
+FROM python:3.9-slim
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY src/security_api/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY src/security_api .
+
+# Create necessary directories for volumes
+RUN mkdir -p /app/logs /app/users
+
+CMD ["uvicorn", "security_api:app", "--host", "0.0.0.0", "--port", "8000"]

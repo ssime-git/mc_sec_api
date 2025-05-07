@@ -1,0 +1,9 @@
+fastapi==0.115.8
+uvicorn==0.29.0
+python-jose==3.3.0
+passlib==1.7.4
+python-multipart==0.0.9
+pyjwt==2.8.0
+bcrypt==4.2.1
+apscheduler==3.10.4
+requests==2.31.0
