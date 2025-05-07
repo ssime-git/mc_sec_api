@@ -579,3 +579,70 @@ make logs      # View logs
 make test      # Run tests
 make backup-db # Backup database
 ```
+
+## Current Implementation and Future Enhancements
+
+### Service-to-Service Authentication: Current Approach
+
+In the current implementation, we use a static API key for service-to-service authentication between the Security API and Prediction API. This approach was chosen for its simplicity and ease of implementation in a demonstration system.
+
+**How it works:**
+1. The API key is stored as an environment variable in the Security API service
+2. When the Security API needs to communicate with the Prediction API, it includes this key in the request header
+3. The Prediction API validates the key before processing the request
+
+**Current security measures:**
+- The API key is never exposed to end users or the Streamlit app
+- All communication happens within the Docker network
+- The Prediction API only accepts requests with a valid API key
+
+### Limitations of the Current Approach
+
+While functional for a demonstration, this approach has several limitations for production environments:
+
+1. **Static Credentials**: The API key doesn't expire or rotate automatically
+2. **Limited Granularity**: The key provides all-or-nothing access to the Prediction API
+3. **Revocation Challenges**: Changing the key requires updating environment variables and restarting services
+4. **No Centralized Management**: Each service pair would need its own key management
+5. **Potential for Key Leakage**: If an attacker gains access to the key, they could directly access the Prediction API
+
+### OAuth2: A More Robust Solution
+
+OAuth2, particularly with the client credentials flow, would address these limitations and provide a more secure and scalable solution:
+
+**How OAuth2 would enhance the system:**
+
+1. **Dynamic Access Tokens**:
+   - Short-lived access tokens instead of static API keys
+   - Automatic expiration limits the damage if compromised
+   - Refresh tokens enable continuous operation without permanent credentials
+
+2. **Fine-grained Access Control**:
+   - Scope-based permissions (e.g., "prediction:read", "prediction:execute")
+   - Different services can have different access levels
+   - Permissions can be adjusted without changing credentials
+
+3. **Centralized Authorization**:
+   - A dedicated authorization server manages all service credentials
+   - Single point of control for access policies across the system
+   - Token revocation possible without service disruption
+
+4. **Enhanced Security**:
+   - Industry-standard security practices and libraries
+   - Support for additional security measures like PKCE
+   - Built-in audit logging of token issuance and usage
+
+5. **Scalability**:
+   - Designed for microservice architectures
+   - Can handle many services with different access requirements
+   - Integrates with existing identity providers
+
+**Implementation Approach:**
+
+To implement OAuth2 in this system, we would:
+1. Add an authorization server (could be integrated into the Security API)
+2. Update the Security API to request tokens using client credentials
+3. Modify the Prediction API to validate OAuth2 tokens instead of API keys
+4. Implement token caching and refresh logic in the Security API
+
+This enhancement would significantly improve the security posture of the system while maintaining the clean separation between services that is central to our GDPR-compliant architecture.

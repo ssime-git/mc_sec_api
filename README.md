@@ -1,303 +1,113 @@
-# Securing API
+# API Security Masterclass Repository
 
-This repo is used for demo purpose during the masterclass `API Security`. Here are the ressources :
-* [slides](https://docs.google.com/presentation/d/1LmQAB2wKJdoj7cNDC6G40Jfd6m3r5xt_/edit#slide=id.g2e34f6b7219_0_189)
-* **Special attention** : Never install `jwt`and `PyJWT`package at the same time. See [this thread](https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode) on stackoverflow.
+This repository contains demonstration materials for the API Security Masterclass. It includes practical examples of secure API implementation, GDPR compliance, and OAuth2 authentication.
 
-## 1. Setup
+## Repository Structure
 
-We are using `uv` to create the virtual environment. For more details about `uv`, you can check the [doc](https://docs.astral.sh/uv/getting-started/installation/).
+This repository is organized into two main components:
 
-Run the following commands to set up the environment:
+1. **[GDPR-Compliant API System](/securing_api)** - A comprehensive example of a secure, GDPR-compliant ML API system
+2. **OAuth2 Demo** - Demonstration of OAuth2 authentication flows
+
+## Resources
+
+* [Masterclass Slides](https://docs.google.com/presentation/d/1LmQAB2wKJdoj7cNDC6G40Jfd6m3r5xt_/edit#slide=id.g2e34f6b7219_0_189)
+* [API Security Best Practices](https://github.com/OWASP/API-Security/blob/master/2019/en/dist/owasp-api-security-top-10.pdf) (OWASP API Security Top 10)
+
+## Setup Instructions
+
+We recommend using `uv` to create the virtual environment. For more details about `uv`, check the [documentation](https://docs.astral.sh/uv/getting-started/installation/).
 
 ```sh
 # Clone the repo
 git clone https://github.com/ssime-git/mc_sec_api.git
 
-# create a venv
+# Create a venv
 uv venv
 
 # Activate the venv
-source  .venv/bin/activate
+source .venv/bin/activate
 
-# install all the dependencies
+# Install all the dependencies
 uv sync
+```
 
-# get into the repo
+## GDPR-Compliant API System
+
+The [securing_api](/securing_api) directory contains a complete implementation of a GDPR-compliant machine learning API system with the following features:
+
+- Two-API architecture separating security from prediction functionality
+- User authentication with JWT tokens
+- Consent management for GDPR compliance
+- Data pseudonymization
+- Streamlit dashboard for user interaction
+
+See the [securing_api README](/securing_api/README.md) for detailed documentation.
+
+## OAuth2 Demo
+
+The OAuth2 demo illustrates different OAuth2 flows including:
+
+- Authorization Code Flow
+- Client Credentials Flow
+- Implicit Flow
+- Resource Owner Password Credentials Flow
+
+This demonstrates how OAuth2 can be used for more robust service-to-service authentication compared to static API keys.
+
+## Important Notes
+
+* **JWT Libraries**: Never install both `jwt` and `PyJWT` packages at the same time. This can cause conflicts. See [this StackOverflow thread](https://stackoverflow.com/questions/33198428/jwt-module-object-has-no-attribute-encode) for details.
+* **Environment Variables**: Both demos use environment variables for configuration. See the respective `.env.example` files for required variables.
+
+## Getting Started
+
+### GDPR-Compliant API System
+
+To run the GDPR-compliant API system:
+
+```sh
+# Navigate to the securing_api directory
 cd securing_api
+
+# Start all services using Docker Compose
+docker compose up --build
+
+# Or use the Makefile
+make up
 ```
 
-Now, we will try to secure a very basic API.
+Once running, you can access:
+- Streamlit Dashboard: http://localhost:8502
+- Security API: http://localhost:8000
+- Prediction API: http://localhost:8001 (internal only)
 
-## 2. Securing API
+Default login credentials:
+- Username: `apitest` or `apitest2`
+- Password: `Test123!`
 
-For the demo purpose, we created 3 API's with each having pros and cons. You will find some details (in french, english is coming...) [here](securing_api/demonstration_fr.md).
+### Documentation
 
-All the scripts can be find in `securing_api/` folder.
+For detailed documentation on each component:
 
-### 2.1 API V1
+- [GDPR-Compliant API System Documentation](/securing_api/README.md) - Complete documentation of the architecture, API endpoints, and GDPR compliance features
 
-Run the script:
+## Contributing
 
-```sh
-# Enter the dedicated folder
-cd securing_api/
+Contributions to improve the demonstrations or add new security features are welcome. Please follow these steps:
 
-# Run all the APIs at once
-make run
-```
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-The last commands, will run a `fastHTML` app with some interaction with the 3 APIs.
+## License
 
-#### Testing the API v0
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-To test the API, you can use various tools such as `curl`, Postman, or Python scripts. Below, I'll provide examples for each method to test the `/predict/`, `/pseudonymize/`, and `/decrypt/{user_id}` endpoints.
+## Acknowledgments
 
-##### Using `curl`
-
-1. **Test `/predict/` endpoint:**
-
-```sh
-curl -X POST "http://localhost:8000/predict/" -H "Content-Type: application/json" -d '{
-    "first_name": "John",
-    "last_name": "Doe",
-    "email": "john.doe@example.com",
-    "age": 30,
-    "sex": "Male",
-    "favorite_color": "Red",
-    "favorite_food": "Pizza"
-}'
-```
-
-2. **Test `/pseudonymize/` endpoint:**
-
-```sh
-curl -X GET "http://localhost:8000/pseudonymize/"
-```
-
-3. **Test `/decrypt/{user_id}` endpoint (replace `{user_id}` with an actual user ID, e.g., `0`):**
-
-```sh
-curl -X GET "http://localhost:8000/decrypt/0"
-```
-
-##### Using Postman or FastAPI interface
-
-1. **Test `/predict/` endpoint:**
-    * Open Postman.
-    * Create a new POST request with URL: `http://localhost:8000/predict/`.
-    * Set the request body to `raw` and `JSON` format.
-    * Use the following JSON body:
-
-    ```json
-    {
-        "first_name": "John",
-        "last_name": "Doe",
-        "email": "john.doe@example.com",
-        "age": 30,
-        "sex": "Male",
-        "favorite_color": "Red",
-        "favorite_food": "Pizza"
-    }
-    ```
-
-    * Click `Send`.
-
-2. **Test `/pseudonymize/` endpoint:**
-    - Create a new GET request with URL: `http://localhost:8000/pseudonymize/`.
-    - Click `Send`.
-
-3. **Test `/decrypt/{user_id}` endpoint:**
-    - Create a new GET request with URL: `http://localhost:8000/decrypt/0` (assuming `0` is the user ID).
-    - Click `Send`.
-
-##### Using Python Script
-
-1. **Test `/predict/` endpoint:**
-
-```python
-import requests
-
-url = "http://localhost:8000/predict/"
-data = {
-    "first_name": "John",
-    "last_name": "Doe",
-    "email": "john.doe@example.com",
-    "age": 30,
-    "sex": "Male",
-    "favorite_color": "Red",
-    "favorite_food": "Pizza"
-}
-response = requests.post(url, json=data)
-print(response.json())
-```
-
-2. **Test `/pseudonymize/` endpoint:**
-
-```python
-import requests
-
-url = "http://localhost:8000/pseudonymize/"
-response = requests.get(url)
-print(response.json())
-```
-
-3. **Test `/decrypt/{user_id}` endpoint:**
-
-```python
-import requests
-
-url = "http://localhost:8000/decrypt/0"
-response = requests.get(url)
-print(response.json())
-```
-
-#### Best Practices Assessment: GDPR and Security
-
-The used code demonstrates some good practices and areas for improvement in terms of GDPR and security. Let's break it down:
-
-**Good Practices:**
-
-| Good Practice | Description |
-|--------------|-------------|
-| Data Minimization | The code only collects essential user data (first name, last name, email, age, sex, favorite color, and favorite food) for the prediction task. This minimizes the amount of personal data collected, adhering to the GDPR principle of data minimization. |
-| Pseudonymization | The `/pseudonymize/` endpoint pseudonymizes user data by hashing the encrypted data, making it difficult to link back to the individual user. This is a good step towards achieving data anonymization and minimizing privacy risks. |
-| Input Validation | The `validate_user_input` function checks user-provided data against predefined allowed classes, preventing invalid inputs and potential vulnerabilities. |
-| Data Encryption | The code encrypts user data with Fernet, providing protection against unauthorized access and data breaches. |
-| Consent Implementation | The `/` endpoint now includes a simple JavaScript snippet that pops up an alert to the user, asking for consent before using their data. While this approach is basic, it's a good starting point for implementing consent mechanisms. |
-
-**Areas for Improvement:**
-
-| Area | Issue | Recommendation |
-|------|--------|----------------|
-| GDPR Compliance | Missing privacy policy | Add clear policy for data collection, processing and storage |
-| | Lack of user consent | Implement explicit consent collection before data processing |
-| | No purpose limitation | Specify and enforce specific purpose for data collection |
-| | Missing data retention | Define retention period and auto-deletion policy |
-| | Limited data subject rights | Add mechanisms for data access, rectification and deletion |
-| Security | Key management risk | Store encryption key securely using KMS instead of regenerating |
-| | In-memory data storage | Implement secure persistent storage (database, encrypted files) |
-| | Insufficient input handling | Add data sanitization to prevent XSS and SQL injection |
-| | Missing access controls | Implement authentication and authorization |
-
-**Recommendations:**
-
-* Implement a clear and concise privacy policy that aligns with GDPR principles.
-* Obtain explicit consent from users before collecting and processing their personal data.
-* Define a clear purpose limitation for data collection and processing.
-* Establish a data retention policy and automatically delete data when it's no longer needed.
-* Provide mechanisms for users to exercise their GDPR rights (access, rectification, erasure, etc.).
-* Implement a secure encryption key management strategy, considering a Key Management System.
-* Choose a secure storage mechanism for user data, considering persistence, scalability, and security.
-* Sanitize user input before processing to prevent potential vulnerabilities.
-* Add authentication and authorization mechanisms to control access to the API.
-
-By addressing these issues, the code can significantly improve its compliance with GDPR and security best practices, ensuring user privacy and data protection.
-
-<details>
-    <summary>about KMS</summary>
-
-#### About Key Management Systems (KMS)
-
-Here are some examples of Key Management Systems (KMS) for managing encryption keys, categorized by pricing and open-source status:
-
-**Paid KMS:**
-
-* **Amazon Key Management Service (KMS):** Offered as part of AWS, it provides robust key management, integration with other AWS services, and features like key rotation, hardware security modules (HSMs), and audit logging.
-* **Google Cloud Key Management Service (KMS):** Google's KMS solution integrated into Google Cloud Platform, offering similar features to AWS KMS, including HSM support and compliance with various standards.
-* **Microsoft Azure Key Vault:** Azure's key management service, providing key storage, access control, and integration with other Azure services. It offers both software and hardware-based security options.
-* **Hashicorp Vault:** A popular open-core KMS solution that provides key management, secret storage, and access control. It offers both free and paid plans with varying features.
-
-**Free and Open-Source KMS:**
-
-* **Vault (HashiCorp):**  While Vault is a paid offering in the enterprise edition, its core functionality for key management is open-source and free to use.  Vault is popular due to its flexible architecture, strong community, and support for multiple platforms.
-* **Kubernetes Secrets Manager:** This is a KMS specifically designed for Kubernetes environments. It's built into Kubernetes and handles key storage and retrieval for applications running within the cluster.
-* **Confidentiality Key Management System (CKMS):** This is a free and open-source KMS developed by the University of California, Berkeley. CKMS focuses on secure key management for distributed systems and features a decentralized architecture.
-
-**Choosing the Right KMS:**
-
-* **Integration:** Choose a KMS that integrates well with your existing infrastructure (e.g., cloud platform, development tools, and security systems).
-* **Features:**  Consider the features you need, such as key rotation, HSM support, audit logging, compliance with standards (e.g., FIPS 140-2, GDPR), and integration with other security tools.
-* **Scalability:**  Choose a KMS that can scale with your needs and handle large numbers of keys and operations.
-* **Cost:**  Evaluate the pricing models of different KMS options and choose one that fits your budget.
-
-**Key Considerations for Selecting a KMS:**
-
-* **Security:** The KMS should provide robust security features to protect keys from unauthorized access, disclosure, and tampering.
-* **Ease of Use:** The KMS should be easy to use, configure, and integrate into your existing systems.
-* **Compliance:**  Ensure the KMS meets relevant regulatory requirements for data protection and security (e.g., GDPR, HIPAA, PCI DSS).
-* **Support:**  Choose a KMS with adequate support options to help you resolve issues and maintain compliance.
-
-Remember that security is a continuous process. Choose a KMS solution that fits your specific needs, monitor its performance, and regularly update it to ensure the ongoing security of your encryption keys.
-
-</details>
-
-### 2.2 API V2
-
-Here are key changes :
-
-* **Same code**, but with an absent key and using a `.env` file to store the encryption key.
-* Suitable for prototype phase, but better with the key stored in a KMS or in the directly define in the production environment.
-
-#### GDPR considerations
-This version makes a significant improvement by moving the encryption key to an environment variable, addressing one of the key security concerns from the previous version. Let's break down the changes and assess the best practices:
-
-**Improvements:**
-
-* **Encryption Key Management:** The `generate_encryption_suite` function now retrieves the encryption key from the environment variable `ENCRYPTION_KEY` using `os.getenv("ENCRYPTION_KEY")`. This is a better approach as it avoids hardcoding the key within the code, making it harder for attackers to discover it.
-
-**Areas for Improvement:**
-
-* **Encryption Key Management:** While storing the key in an environment variable is a good step, it's still not the most secure practice. For production environments, consider using a dedicated Key Management System (KMS) to manage encryption keys, as they offer features like key rotation, access control, and auditing.
-* **Consent Mechanism:** The current JavaScript-based alert is very basic and lacks clear information about data collection, processing, and the user's rights.  Consider implementing a more robust consent mechanism that:
-    * Clearly states the data collected, its purpose, and how it's used.
-    * Explains the user's rights under GDPR (access, rectification, erasure, etc.).
-    * Uses a more visible and interactive interface for consent (e.g., a check-box or a modal popup).
-* **Data Storage:** The `users` list still stores encrypted data in memory, making it susceptible to data loss if the server restarts or crashes.  Consider implementing a secure storage mechanism like a database or encrypted file storage to persist the data and ensure its availability.
-* **Input Sanitization:**  While the code validates user input, it lacks sanitization, which is still crucial for protecting against vulnerabilities like XSS and SQL injection.
-
-**Recommendations:**
-
-* **Implement a Secure Key Management System (KMS) for production environments.** This will greatly enhance the security of encryption key management.
-* **Develop a more robust consent mechanism.**  Provide clear and detailed information about data usage and user rights.
-* **Choose a secure and persistent storage solution for user data.**  Use a database or encrypted file storage to ensure data availability and resilience.
-* **Sanitize user input to prevent potential vulnerabilities.**  Implement input sanitization techniques to protect against XSS and SQL injection attacks.
-* **Consider adding authentication and authorization mechanisms.**  Control access to the API to prevent unauthorized users from accessing or modifying user data.
-
-
-### 2.3 API V3: Simple OAuth : with password bearer (script `3_example_jwt.py`)
-
-OAuth = Set of protocols (auth-code used with several apps interacting at the same time).
-
-To use it, follow the steps below
-
-1. launch the API: `python 3_example_oauth`.
-2. register a user on the `register/` endpoint or use `ssime:test` (username:password already defined)
-3. authenticate with the creds above :
-![alt text](./report/image.png)
-5. Test the `./precedict` route
-4. The `token` route is simply the way to authenticate programmatically
-![alt text](./report/image-1.png)
-
-## MLOPS Best Practices for Security and GDPR:
-
-| MLOPS Stage | Security Best Practices | GDPR Considerations | Requirements |
-|---|---|---|---|
-| **Data Collection & Preparation** |  * **Data Minimization:** Only collect necessary data for the model's purpose.  <br> * **Data Anonymization:** Consider techniques like pseudonymization or differential privacy to anonymize sensitive data. <br> * **Secure Data Storage:** Use encrypted storage solutions (e.g., databases, file systems) with access control. | * **Purpose Limitation:** Clearly define the purpose for data collection and processing. <br> * **Transparency:** Provide clear information about data usage and user rights. <br> * **Data Retention:** Establish a retention policy and delete data when no longer needed. |  * **Consent:** Obtain explicit consent from users before collecting personal data. <br> * **Privacy Policy:** Publish a comprehensive privacy policy that outlines data practices. |
-| **Model Development & Training** | * **Secure Development Environment:** Use secure coding practices, code reviews, and automated vulnerability scans. <br> * **Model Privacy:** Incorporate privacy-enhancing techniques (e.g., differential privacy) into the model training process to minimize risks of re-identification. <br> * **Data Integrity:** Use data validation and anomaly detection mechanisms to ensure data quality. | * **Purpose Limitation:** Ensure that model training and predictions are aligned with the stated purpose of data collection. <br> * **Accountability:** Document all data processing steps and model decisions for auditability. |  * **Data Subject Rights:** Implement mechanisms for users to exercise their rights (e.g., access, rectification, erasure). |
-| **Model Evaluation & Deployment** | * **Model Security Testing:** Conduct security testing and penetration testing to identify vulnerabilities. <br> * **Monitoring & Logging:** Implement monitoring systems to detect anomalies, unauthorized access, and potential data breaches. <br> * **Secure Deployment:** Use secure containerization and deployment tools. | * **Data Protection by Design:** Ensure that security and privacy considerations are integrated into all stages of model deployment. <br> * **Data Retention:** Establish a policy for model outputs and predictions. |  * **Data Subject Rights:**  Enable users to access and delete their data associated with predictions. |
-| **Model Serving & API** | * **Authentication & Authorization:** Implement authentication and authorization mechanisms to control access to the API.  <br> * **Input Validation & Sanitization:**  Validate and sanitize user inputs to prevent vulnerabilities like XSS and SQL injection. <br> * **Rate Limiting:**  Implement rate limiting to prevent denial-of-service attacks. <br> * **Encryption in Transit:** Secure data transmission with HTTPS and SSL/TLS encryption. | * **Transparency:** Provide clear documentation about data processing and privacy practices within the API. <br> * **Purpose Limitation:** Ensure the API only processes data for its intended purpose.  <br> * **Data Subject Rights:** Implement mechanisms to handle user requests related to their data (access, rectification, erasure).  | * **Consent:**  Ensure API users understand and consent to data processing for predictions. <br> * **Privacy Policy:**  Clearly communicate data practices within the API documentation and terms of service. |
-| **Model Monitoring & Maintenance** | * **Continuous Security Monitoring:** Monitor model performance and detect any security vulnerabilities or anomalies. <br> * **Security Patching & Updates:** Regularly update and patch models and infrastructure to address security vulnerabilities. <br> * **Model Retraining & Updates:** Re-train models with updated data and security enhancements. | * **Data Quality Monitoring:**  Monitor data quality and identify potential data breaches or privacy violations. <br> * **Model Bias Detection:**  Monitor model performance for biases that could lead to unfair or discriminatory outcomes.  | * **Data Retention & Deletion:**  Adhere to established retention policies and ensure timely data deletion. <br> * **Auditing & Documentation:**  Maintain records of data processing and model decisions for auditability and compliance purposes. |
-
-
-**Key Requirements for All Stages:**
-
-* **Secure Infrastructure:**  Use secure and reliable infrastructure (cloud providers, on-premises) with appropriate security controls and monitoring.
-* **Secure Communication:**  Encrypt data in transit and at rest to protect against unauthorized access.
-* **Strong Access Control:**  Implement granular access control to restrict user access to sensitive data and model components.
-* **Regular Security Audits:**  Conduct regular security audits to identify vulnerabilities and ensure compliance.
-* **Data Governance Framework:**  Establish a data governance framework with clear policies and processes for managing data privacy and security.
-
-## Next level security
-
-Using `OAUTH2` protocol. You can switch to `oauth2/` folder.
+- OWASP API Security Project for best practices
+- FastAPI for the API framework
+- Streamlit for the dashboard interface
