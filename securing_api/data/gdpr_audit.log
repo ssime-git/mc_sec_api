@@ -1,0 +1,24 @@
+2025-05-07 09:55:22,785 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 09:55:22,810 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 09:55:22,830 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 09:55:22,900 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 09:55:22,918 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 09:55:23,518 - CONSENT_UPDATE - User: apitest - Details: type=test_expiring granted=True
+2025-05-07 09:55:55,443 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 09:56:17,494 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 09:56:17,527 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 09:56:57,542 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 09:56:57,553 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 09:57:03,147 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 09:57:03,159 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 09:57:15,859 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 09:57:15,869 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 09:59:22,545 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 09:59:36,063 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 09:59:36,095 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 10:00:04,488 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 10:00:04,515 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 10:00:04,535 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 10:00:04,543 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 10:00:04,558 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 10:00:05,095 - CONSENT_UPDATE - User: apitest - Details: type=test_expiring granted=True

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 # Database setup
 # Use absolute path for Docker volume mount compatibility
-DB_PATH = "/app/users/gdpr_db.sqlite"
+DB_PATH = "/app/data/gdpr_db.sqlite"
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

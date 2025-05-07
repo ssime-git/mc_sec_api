@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
@@ -28,6 +28,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI(title="Security & GDPR API")
+
+# Health check endpoint
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 # Registration endpoint
 @app.post("/register", status_code=status.HTTP_201_CREATED)
@@ -315,3 +320,77 @@ def start_scheduler():
 @app.on_event("shutdown")
 def shutdown_scheduler():
     scheduler.shutdown()
+
+
+# Admin API endpoint for database commands
+@app.get("/admin/db-command")
+def run_db_command(command: str, token: str = Depends(oauth2_scheme)):
+    """Run a database command (admin only)"""
+    try:
+        # Verify token and check if user is admin
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        # For demo purposes, consider 'apitest' as admin
+        if username != "apitest":
+            raise HTTPException(status_code=403, detail="Not authorized to run database commands")
+        
+        # Execute the database command
+        conn = user_db.get_db_connection()
+        try:
+            cursor = conn.cursor()
+            
+            if command == "db-list-users":
+                cursor.execute("SELECT id, username, created_at FROM users")
+                columns = [column[0] for column in cursor.description]
+                results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                
+            elif command == "db-list-consents":
+                cursor.execute("SELECT username, consent_type, granted, granted_at, expires_at FROM consents")
+                columns = [column[0] for column in cursor.description]
+                results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                
+            elif command == "db-check-expired":
+                cursor.execute("SELECT username, consent_type, expires_at FROM consents WHERE expires_at < datetime('now')")
+                columns = [column[0] for column in cursor.description]
+                results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                
+            elif command == "db-list-audit":
+                cursor.execute("SELECT timestamp, action_type, username, details FROM audit_log ORDER BY timestamp DESC LIMIT 20")
+                columns = [column[0] for column in cursor.description]
+                results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                
+            elif command == "db-count":
+                cursor.execute("SELECT COUNT(*) FROM users")
+                users_count = cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM consents")
+                consents_count = cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM audit_log")
+                audit_count = cursor.fetchone()[0]
+                results = [
+                    {"table": "users", "count": users_count},
+                    {"table": "consents", "count": consents_count},
+                    {"table": "audit_log", "count": audit_count}
+                ]
+                
+            elif command == "db-cleanup-expired":
+                deleted_count = user_db.cleanup_expired_data()
+                results = [{"action": "cleanup", "deleted_count": deleted_count}]
+                
+            elif command == "db-schema":
+                cursor.execute("SELECT name, sql FROM sqlite_master WHERE type='table' ORDER BY name")
+                results = [dict(zip(["table_name", "schema"], row)) for row in cursor.fetchall()]
+                
+            else:
+                raise HTTPException(status_code=400, detail=f"Unknown command: {command}")
+            
+            # Log the admin action
+            user_db.log_action("admin_db_command", username, f"Command: {command}")
+            
+            return {"success": True, "results": results}
+        finally:
+            conn.close()
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")

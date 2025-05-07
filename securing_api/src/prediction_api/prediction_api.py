@@ -3,11 +3,17 @@ import numpy as np
 import pickle
 import os
 import joblib
+from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel
 from sklearn.preprocessing import OneHotEncoder
 
 app = FastAPI(title="Prediction API")
+
+# Health check endpoint
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 # User prediction model class
 class UserPrediction(BaseModel):

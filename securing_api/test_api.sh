@@ -144,12 +144,12 @@ echo ""
 
 # 6. Check GDPR logs
 echo -e "${BLUE}6. Checking GDPR audit logs${NC}"
-LOGS=$(docker exec securing_api-security_api-1 cat /app/logs/gdpr_audit.log 2>/dev/null)
+LOGS=$(docker exec security_api cat /app/data/gdpr_audit.log 2>/dev/null)
 
 if [[ -n "$LOGS" ]]; then
   echo -e "${GREEN}✓ GDPR logs available${NC}"
   echo "Last 3 log entries:"
-  docker exec securing_api-security_api-1 tail -n 3 /app/logs/gdpr_audit.log 2>/dev/null
+  docker exec security_api tail -n 3 /app/data/gdpr_audit.log 2>/dev/null
 else
   echo -e "${RED}✗ GDPR logs not found or empty${NC}"
 fi
@@ -157,12 +157,12 @@ echo ""
 
 # 7. Check database persistence
 echo -e "${BLUE}7. Checking database persistence${NC}"
-DB_FILES=$(docker exec securing_api-security_api-1 ls -la /app/users/ 2>/dev/null)
+DB_FILES=$(docker exec security_api ls -la /app/data/ 2>/dev/null)
 
 if [[ -n "$DB_FILES" ]]; then
   echo -e "${GREEN}✓ Database files exist${NC}"
   echo "Database files:"
-  docker exec securing_api-security_api-1 ls -la /app/users/ 2>/dev/null
+  docker exec security_api ls -la /app/data/ 2>/dev/null
 else
   echo -e "${RED}✗ Database files not found${NC}"
 fi
@@ -193,7 +193,7 @@ if [[ -n "$SCHEDULER_LOGS" ]]; then
     
     # Manually run the cleanup function to test data retention
     echo -e "${BLUE}Running manual cleanup to test data retention...${NC}"
-    docker exec securing_api-security_api-1 python -c "from datetime import datetime, timedelta; import sqlite3; conn = sqlite3.connect('/app/users/gdpr_db.sqlite'); cursor = conn.cursor(); yesterday = (datetime.now() - timedelta(days=1)).isoformat(); cursor.execute('UPDATE consents SET expires_at = ? WHERE consent_type = \'test_expiring\'', (yesterday,)); conn.commit(); print(f'Set test_expiring consent to expire yesterday: {yesterday}'); conn.close()"
+    docker exec security_api python -c "from datetime import datetime, timedelta; import sqlite3; conn = sqlite3.connect('/app/data/gdpr_db.sqlite'); cursor = conn.cursor(); yesterday = (datetime.now() - timedelta(days=1)).isoformat(); cursor.execute('UPDATE consents SET expires_at = ? WHERE consent_type = \'test_expiring\'', (yesterday,)); conn.commit(); print(f'Set test_expiring consent to expire yesterday: {yesterday}'); conn.close()"
     
     # Check that the consent is now expired
     echo "Checking expired consents:"
@@ -201,15 +201,15 @@ if [[ -n "$SCHEDULER_LOGS" ]]; then
     
     # Force cleanup using direct SQL query
     echo -e "${BLUE}Forcing cleanup of expired consents...${NC}"
-    docker exec securing_api-security_api-1 python -c "import sqlite3; conn = sqlite3.connect('/app/users/gdpr_db.sqlite'); cursor = conn.cursor(); cursor.execute('DELETE FROM consents WHERE expires_at < datetime(\'now\')'); deleted = cursor.rowcount; print(f'Expired consents removed: {deleted}'); cursor.execute('INSERT INTO audit_log (action_type, details) VALUES (\'data_cleanup\', \'Manual cleanup of expired consents\')'); conn.commit(); conn.close(); print('Cleanup completed and logged')"
+    docker exec security_api python -c "import sqlite3; conn = sqlite3.connect('/app/data/gdpr_db.sqlite'); cursor = conn.cursor(); cursor.execute('DELETE FROM consents WHERE expires_at < datetime(\'now\')'); deleted = cursor.rowcount; print(f'Expired consents removed: {deleted}'); cursor.execute('INSERT INTO audit_log (action_type, details) VALUES (\'data_cleanup\', \'Manual cleanup of expired consents\')'); conn.commit(); conn.close(); print('Cleanup completed and logged')"
     
     # Verify cleanup worked
     echo "Verifying cleanup worked:"
-    docker exec securing_api-security_api-1 python -c "import sqlite3; conn = sqlite3.connect('/app/users/gdpr_db.sqlite'); cursor = conn.cursor(); cursor.execute('SELECT COUNT(*) FROM consents WHERE consent_type=\'test_expiring\''); count = cursor.fetchone()[0]; print(f'Remaining test_expiring consents: {count}'); print('✓ Cleanup successful' if count == 0 else '⚠ Cleanup failed - consents still exist'); conn.close()"
+    docker exec security_api python -c "import sqlite3; conn = sqlite3.connect('/app/data/gdpr_db.sqlite'); cursor = conn.cursor(); cursor.execute('SELECT COUNT(*) FROM consents WHERE consent_type=\'test_expiring\''); count = cursor.fetchone()[0]; print(f'Remaining test_expiring consents: {count}'); print('✓ Cleanup successful' if count == 0 else '⚠ Cleanup failed - consents still exist'); conn.close()"
     
     # Check audit log
     echo "Checking audit log for cleanup records:"
-    docker exec securing_api-security_api-1 python -c "import sqlite3; conn = sqlite3.connect('/app/users/gdpr_db.sqlite'); cursor = conn.cursor(); cursor.execute('SELECT timestamp, action_type, details FROM audit_log WHERE action_type IN (\'data_cleanup\', \'consent_cleanup\') ORDER BY timestamp DESC LIMIT 3'); rows = cursor.fetchall(); print('Recent cleanup logs:'); [print(f'{row[0]} - {row[1]} - {row[2]}') for row in rows] if rows else print('No cleanup logs found'); conn.close()"
+    docker exec security_api python -c "import sqlite3; conn = sqlite3.connect('/app/data/gdpr_db.sqlite'); cursor = conn.cursor(); cursor.execute('SELECT timestamp, action_type, details FROM audit_log WHERE action_type IN (\'data_cleanup\', \'consent_cleanup\') ORDER BY timestamp DESC LIMIT 3'); rows = cursor.fetchall(); print('Recent cleanup logs:'); [print(f'{row[0]} - {row[1]} - {row[2]}') for row in rows] if rows else print('No cleanup logs found'); conn.close()"
   else
     echo -e "${RED}✗ Failed to grant test consent${NC}"
     echo "Response: $CONSENT_RESPONSE"

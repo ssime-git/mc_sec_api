@@ -8,9 +8,10 @@ from typing import Dict, Any, List, Optional
 from user_db import log_action as db_log_action
 
 class GDPRUtils:
-    def __init__(self, retention_days: int = 30, log_file: str = "/app/logs/gdpr_audit.log"):
+    def __init__(self, retention_days: int = 30, log_file: str = None):
         self.retention_days = retention_days
-        self.log_file = log_file
+        # Use environment variable if available, otherwise use default
+        self.log_file = log_file or os.environ.get("GDPR_LOG_FILE", "/app/data/gdpr_audit.log")
         self.setup_logging()
         
     def setup_logging(self):

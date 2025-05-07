@@ -8,8 +8,9 @@ This project implements a GDPR-compliant machine learning API system using a two
 
 1. **Security API**: Handles user authentication, consent management, and data pseudonymization
 2. **Prediction API**: Performs machine learning predictions without access to personally identifiable information
-3. **Unified Database**: Stores user data, consent records, and audit logs in a GDPR-compliant manner
-4. **Automated Data Retention**: Scheduled cleanup of expired data to comply with data minimization principles
+3. **Streamlit Dashboard**: User-friendly interface for clients and administrators to interact with the system
+4. **Unified Database**: Stores user data, consent records, and audit logs in a GDPR-compliant manner
+5. **Automated Data Retention**: Scheduled cleanup of expired data to comply with data minimization principles
 
 ```txt
 ┌─────────────────┐         ┌─────────────────┐
@@ -22,6 +23,13 @@ This project implements a GDPR-compliant machine learning API system using a two
          │                           │
          │                           │
          ▼                           ▼
+┌─────────────────────────────────────────────┐
+│                                             │
+│           Streamlit Dashboard               │
+│                                             │
+└───────────────────┬─────────────────────────┘
+                    │
+                    ▼
 ┌─────────────────────────────────────────────┐
 │                                             │
 │            Security/GDPR API                │
@@ -111,6 +119,40 @@ docker compose up --build
 
 # Or use the Makefile
 make up
+```
+
+## Streamlit Dashboard
+
+The system includes a Streamlit-based dashboard that provides a user-friendly interface for both end clients and administrators to interact with the APIs.
+
+### Features
+
+#### Client Features
+- **User Authentication**: Login and registration
+- **Consent Management**: View, grant, and revoke consents with customizable expiration periods
+- **Make Predictions**: Submit data for zodiac sign prediction with pseudonymization
+- **Personal Data Access**: View and export personal data stored in the system
+
+#### Admin Features
+- **User Management**: View and manage user accounts
+- **Audit Logs**: Monitor system activities for compliance verification
+- **Database Management**: Execute database commands through a user-friendly interface
+- **Data Retention**: Monitor and manage data retention policies and expired consents
+
+### Running the Streamlit App
+
+```bash
+# Install dependencies
+make streamlit-install
+
+# Run locally
+make streamlit-run
+
+# Or with Docker
+make up  # Starts all services including Streamlit
+
+# Open in browser
+make streamlit-open  # Opens http://localhost:8502
 ```
 
 ## API Endpoints

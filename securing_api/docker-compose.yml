@@ -5,17 +5,19 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.security
+    container_name: security_api
     ports:
       - "8000:8000"
-    environment:
-      - SECRET_KEY=your-secure-secret-key
-      - PREDICTION_API_URL=http://prediction_api:8001
-      - PREDICTION_API_KEY=internal-secure-key
-      - GDPR_LOG_FILE=/app/logs/gdpr_audit.log
     volumes:
-      - ./data:/app/users:rw  # Persist user database with read-write access
-      - ./logs:/app/logs:rw   # Persist logs
+      - ./data:/app/data
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - PREDICTION_API_URL=http://prediction_api:8001
+      - PREDICTION_API_KEY=${PREDICTION_API_KEY}
+      - GDPR_LOG_FILE=/app/data/gdpr_audit.log
     restart: unless-stopped   # Automatically restart container
+    networks:
+      - app-network
     depends_on:
       - prediction_api
 
@@ -23,10 +25,32 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.prediction
+    container_name: prediction_api
     ports:
       - "8001:8001"
-    volumes:
-      - ./models:/app/models:ro  # Mount models directory as read-only
     environment:
-      - API_KEY=internal-secure-key
+      - API_KEY=${PREDICTION_API_KEY}
     restart: unless-stopped   # Automatically restart container
+    networks:
+      - app-network
+
+  streamlit_app:
+    build:
+      context: ./src/streamlit_app
+      dockerfile: Dockerfile
+    container_name: streamlit_app
+    ports:
+      - "8502:8501"
+    environment:
+      - SECURITY_API_URL=http://security_api:8000
+      - PREDICTION_API_URL=http://prediction_api:8001
+    restart: unless-stopped   # Automatically restart container
+    depends_on:
+      - security_api
+      - prediction_api
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
