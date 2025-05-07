@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - ./data:/app/data
+      - ./src/security_api:/app
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - PREDICTION_API_URL=http://prediction_api:8001
@@ -36,11 +37,13 @@ services:
 
   streamlit_app:
     build:
-      context: ./src/streamlit_app
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile.streamlit
     container_name: streamlit_app
     ports:
       - "8502:8501"
+    volumes:
+      - ./src/streamlit_app:/app
     environment:
       - SECURITY_API_URL=http://security_api:8000
       - PREDICTION_API_URL=http://prediction_api:8001

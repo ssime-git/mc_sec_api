@@ -106,18 +106,22 @@ async def predict(
             features = preprocess_user_data(user_pred)
             
             # Make prediction
+            prediction_method = "model_numeric"  # Default method
             try:
                 # Try to get a numeric prediction
                 prediction = model.predict(features)[0]
                 if isinstance(prediction, (int, float, np.integer, np.floating)):
                     prediction_value = int(prediction) % 12
+                    prediction_method = "model_numeric"
                 else:
                     # If prediction is not numeric, use a hash of the features to get a consistent zodiac sign
                     prediction_value = hash(str(features)) % 12
+                    prediction_method = "hash_based"
             except Exception as e:
                 print(f"Error in prediction: {str(e)}")
                 # Fallback to a deterministic method based on input features
                 prediction_value = (user_pred.age % 12)
+                prediction_method = "age_fallback"
             
             # Get confidence value
             try:
@@ -138,6 +142,7 @@ async def predict(
                 "user_hash": data.get("user_hash", "anonymous"),
                 "model_version": "1.0",
                 "prediction_type": "zodiac_sign",
+                "prediction_method": prediction_method,  # Include the prediction method used
                 "timestamp": str(np.datetime64('now')),
                 "input_features": {
                     "age": user_pred.age,

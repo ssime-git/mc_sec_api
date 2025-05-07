@@ -12,54 +12,50 @@ This project implements a GDPR-compliant machine learning API system using a two
 4. **Unified Database**: Stores user data, consent records, and audit logs in a GDPR-compliant manner
 5. **Automated Data Retention**: Scheduled cleanup of expired data to comply with data minimization principles
 
-```txt
-┌─────────────────┐         ┌─────────────────┐
-│                 │         │                 │
-│    Client       │         │   Admin/User    │
-│    Application  │         │   Interface     │
-│                 │         │                 │
-└────────┬────────┘         └────────┬────────┘
-         │                           │
-         │                           │
-         │                           │
-         ▼                           ▼
-┌─────────────────────────────────────────────┐
-│                                             │
-│           Streamlit Dashboard               │
-│                                             │
-└───────────────────┬─────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────┐
-│                                             │
-│            Security/GDPR API                │
-│                                             │
-│  ┌─────────────┐  ┌────────────────────┐   │
-│  │ Auth & JWT  │  │ Consent Management │   │
-│  └─────────────┘  └────────────────────┘   │
-│                                             │
-│  ┌─────────────┐  ┌────────────────────┐   │
-│  │ User Data   │  │ Pseudonymization   │   │
-│  └─────────────┘  └────────────────────┘   │
-│                                             │
-└──────────────────────┬──────────────────────┘
-                       │
-                       │ Internal API Key
-                       │ Pseudonymized Data
-                       ▼
-┌─────────────────────────────────────────────┐
-│                                             │
-│              Prediction API                 │
-│                                             │
-│  ┌─────────────┐  ┌────────────────────┐   │
-│  │ ML Model    │  │ Feature Processing │   │
-│  └─────────────┘  └────────────────────┘   │
-│                                             │
-│  ┌─────────────────────────────────────┐   │
-│  │ No Access to Personal Identifiers   │   │
-│  └─────────────────────────────────────┘   │
-│                                             │
-└─────────────────────────────────────────────┘
+### Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph Client ["Client Applications"]
+        CA[Client App] --> |HTTP Requests| SD
+        UI[Admin/User Interface] --> |HTTP Requests| SD
+    end
+
+    subgraph SD ["Streamlit Dashboard (Port 8502)"]
+        Login[Login/Authentication] --> Dashboard
+        Dashboard --> UserFeatures[User Features]
+        Dashboard --> AdminFeatures[Admin Features]
+        UserFeatures --> ConsentMgmt[Consent Management]
+        UserFeatures --> PredictionUI[Prediction Interface]
+        UserFeatures --> UserData[Personal Data Access]
+        AdminFeatures --> UserMgmt[User Management]
+        AdminFeatures --> AuditView[Audit Logs]
+        AdminFeatures --> DataRetention[Data Retention]
+    end
+
+    SD --> |JWT Token| SA
+
+    subgraph SA ["Security/GDPR API (Port 8000)"]
+        Auth[Authentication & JWT] --> ConsentCheck[Consent Validation]
+        ConsentCheck --> Pseudonymize[Data Pseudonymization]
+        UserDB[(User Database)] --- Auth
+        UserDB --- ConsentCheck
+        AuditLog[GDPR Audit Logging] --- Auth
+        AuditLog --- ConsentCheck
+        AuditLog --- Pseudonymize
+    end
+
+    SA --> |Internal API Key + Pseudonymized Data| PA
+
+    subgraph PA ["Prediction API (Port 8001)"]
+        APIKeyVal[API Key Validation]
+        FeatureProc[Feature Processing]
+        MLModel[ML Model Inference]
+        APIKeyVal --> FeatureProc --> MLModel
+    end
+
+    PA --> |Prediction Result| SA
+    SA --> |Final Response| SD
 ```
 
 ### Why This Architecture?
@@ -139,6 +135,39 @@ The system includes a Streamlit-based dashboard that provides a user-friendly in
 - **Database Management**: Execute database commands through a user-friendly interface
 - **Data Retention**: Monitor and manage data retention policies and expired consents
 
+### Authentication Flow in Streamlit
+
+The Streamlit app implements a secure authentication flow that integrates with the Security API:
+
+1. **Login Process**:
+   ```mermaid
+   sequenceDiagram
+       participant User
+       participant Streamlit as Streamlit App
+       participant Security as Security API
+       participant DB as Database
+       
+       User->>Streamlit: Enter credentials
+       Streamlit->>Security: POST /token with credentials
+       Security->>DB: Verify credentials
+       DB->>Security: Credentials valid
+       Security->>Streamlit: Return JWT token
+       Streamlit->>Streamlit: Store token in session state
+       Streamlit->>User: Redirect to dashboard
+   ```
+
+2. **Session Management**:
+   - JWT token is stored in Streamlit's session state
+   - Token is included in all subsequent API requests
+   - Session expiration handled automatically
+   - Logout clears the session state
+
+3. **Security Considerations**:
+   - Passwords never stored in Streamlit
+   - All sensitive operations performed by Security API
+   - Token-based authentication prevents session hijacking
+   - HTTPS recommended for production deployments
+
 ### Running the Streamlit App
 
 ```bash
@@ -154,6 +183,78 @@ make up  # Starts all services including Streamlit
 # Open in browser
 make streamlit-open  # Opens http://localhost:8502
 ```
+
+## Future Improvements
+
+The current implementation provides a solid foundation for a GDPR-compliant ML system, but several enhancements could further improve security, scalability, and functionality:
+
+### Security Enhancements
+
+1. **Robust User Role Management**:
+   - Implement fine-grained role-based access control (RBAC)
+   - Support for custom roles with specific permissions
+   - Role hierarchy with inheritance of permissions
+
+2. **Advanced Authentication**:
+   - Multi-factor authentication (MFA) support
+   - OAuth2 integration for third-party authentication
+   - Certificate-based authentication for service-to-service communication
+
+3. **Enhanced Encryption**:
+   - Field-level encryption for sensitive data
+   - Client-side encryption for certain operations
+   - Homomorphic encryption for privacy-preserving computation
+
+### Infrastructure Improvements
+
+1. **Production-Grade Deployment**:
+   - Reverse proxy setup with Nginx or Traefik
+   - Load balancing for horizontal scaling
+   - TLS termination and certificate management
+
+2. **High Availability**:
+   - Redundant API instances
+   - Database replication and failover
+   - Distributed caching layer
+
+3. **Monitoring and Observability**:
+   - Centralized logging with ELK stack
+   - Prometheus metrics and Grafana dashboards
+   - Distributed tracing with Jaeger or Zipkin
+
+### ML Pipeline Enhancements
+
+1. **Model Registry**:
+   - Version control for ML models
+   - A/B testing framework
+   - Automated model evaluation
+
+2. **Advanced ML Features**:
+   - Online learning capabilities
+   - Explainable AI components
+   - Drift detection and model retraining
+
+3. **Data Pipeline**:
+   - Streaming data processing
+   - Feature store implementation
+   - Data validation and quality checks
+
+### GDPR Compliance Extensions
+
+1. **Enhanced Data Subject Rights**:
+   - Automated data portability
+   - Right to object implementation
+   - Restriction of processing controls
+
+2. **Compliance Documentation**:
+   - Automated DPIA (Data Protection Impact Assessment)
+   - Record of processing activities
+   - Consent receipt generation
+
+3. **Cross-Border Data Transfers**:
+   - SCCs (Standard Contractual Clauses) management
+   - Regional data residency controls
+   - Privacy Shield alternative mechanisms
 
 ## API Endpoints
 

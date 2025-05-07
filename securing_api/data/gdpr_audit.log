@@ -22,3 +22,67 @@
 2025-05-07 10:00:04,543 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
 2025-05-07 10:00:04,558 - DATA_ACCESS - User: apitest - Details: 
 2025-05-07 10:00:05,095 - CONSENT_UPDATE - User: apitest - Details: type=test_expiring granted=True
+2025-05-07 11:17:55,517 - USER_LOGIN - User: apitest2 - Details: 
+2025-05-07 11:23:20,248 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 11:24:43,158 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 11:24:43,206 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 11:27:43,338 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 11:27:43,366 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data
+2025-05-07 11:28:41,774 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 11:38:14,315 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 11:38:25,499 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 11:38:25,554 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-05-07 11:42:02,677 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 11:42:13,654 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 11:44:50,686 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 11:49:37,597 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:01:03,804 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:02:43,446 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 12:04:37,012 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:12:32,432 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:13:07,677 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:13:13,546 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 12:13:13,607 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-05-07 12:14:03,262 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 12:16:56,166 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:18:54,935 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:21:08,743 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:21:12,401 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 12:21:12,454 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-05-07 12:26:47,658 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:27:56,667 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 12:27:56,689 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-05-07 12:29:57,450 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:44:03,100 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:44:07,184 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:44:10,254 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:44:23,001 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:44:57,753 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:47:50,901 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:48:39,544 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:49:43,368 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:49:43,391 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 12:49:43,404 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 12:49:43,480 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
+2025-05-07 12:49:43,494 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 12:49:43,988 - CONSENT_UPDATE - User: apitest - Details: type=test_expiring granted=True
+2025-05-07 12:50:24,111 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:50:43,574 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:55:56,183 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 12:56:08,284 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 12:56:36,759 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 12:56:41,351 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 13:00:47,402 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 13:01:34,114 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 13:02:19,445 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 13:05:16,109 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 14:18:32,504 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 14:18:37,790 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 14:18:37,846 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
+2025-05-07 14:18:57,414 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 14:24:48,781 - USER_LOGIN - User: apitest - Details: 
+2025-05-07 14:24:48,811 - PSEUDONYMIZATION - User: apitest - Details: data pseudonymized
+2025-05-07 14:24:48,823 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-05-07 14:24:48,841 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
+2025-05-07 14:24:48,853 - DATA_ACCESS - User: apitest - Details: 
+2025-05-07 14:24:49,336 - CONSENT_UPDATE - User: apitest - Details: type=test_expiring granted=True

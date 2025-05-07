@@ -9,6 +9,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # Import modules
 from gdpr_utils import GDPRUtils
 from consent_manager import ConsentManager, ConsentRecord
+import user_db
 from user_db import init_db, register_user, get_user, verify_user
 
 # Initialize database
@@ -240,7 +241,13 @@ async def forward_to_prediction(
             gdpr.log_action("prediction_error", username, f"Error: {response.status_code}")
             raise HTTPException(status_code=response.status_code, detail=response.json())
         
-        gdpr.log_action("prediction", username, "prediction made with pseudonymized data")
+        # Extract prediction details for logging
+        prediction_response = response.json()
+        prediction_method = prediction_response.get("prediction_method", "unknown")
+        prediction_value = prediction_response.get("prediction", "unknown")
+        
+        # Log with detailed information about the prediction method
+        gdpr.log_action("prediction", username, f"prediction made with pseudonymized data using method: {prediction_method}, result: {prediction_value}")
         return response.json()
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -359,6 +366,12 @@ def run_db_command(command: str, token: str = Depends(oauth2_scheme)):
                 
             elif command == "db-list-audit":
                 cursor.execute("SELECT timestamp, action_type, username, details FROM audit_log ORDER BY timestamp DESC LIMIT 20")
+                columns = [column[0] for column in cursor.description]
+                results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                
+            elif command == "db-list-predictions":
+                # Query for both prediction_request and prediction actions
+                cursor.execute("SELECT timestamp, username, action_type, details FROM audit_log WHERE action_type IN ('prediction_request', 'prediction') ORDER BY timestamp DESC LIMIT 50")
                 columns = [column[0] for column in cursor.description]
                 results = [dict(zip(columns, row)) for row in cursor.fetchall()]
                 

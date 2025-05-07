@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime, timedelta
 
 # Import from unified database module
 from user_db import (

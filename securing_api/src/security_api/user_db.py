@@ -1,6 +1,6 @@
 import sqlite3
 from passlib.context import CryptContext
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 import os
 from datetime import datetime, timedelta
 
@@ -142,24 +142,36 @@ def add_consent(username: str, consent_type: str, granted: bool = True, days_val
     finally:
         conn.close()
 
-def get_user_consents(username: str) -> Dict[str, bool]:
+def get_user_consents(username: str) -> List[Dict[str, Any]]:
     """Get all consents for a user"""
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
         cursor.execute(
-            """SELECT consent_type, granted FROM consents 
-               WHERE username = ? AND expires_at > CURRENT_TIMESTAMP""",
+            """SELECT consent_type, granted, granted_at, expires_at FROM consents 
+               WHERE username = ?""",
             (username,)
         )
-        return {row["consent_type"]: bool(row["granted"]) for row in cursor.fetchall()}
+        results = []
+        for row in cursor.fetchall():
+            results.append({
+                "consent_type": row["consent_type"],
+                "granted": bool(row["granted"]),
+                "granted_at": row["granted_at"],
+                "expires_at": row["expires_at"],
+                "active": bool(row["granted"]) and (row["expires_at"] is None or row["expires_at"] > datetime.now().isoformat())
+            })
+        return results
     finally:
         conn.close()
 
 def validate_consents(username: str, required_consents: List[str]) -> bool:
     """Check if user has all required consents"""
     user_consents = get_user_consents(username)
-    return all(user_consents.get(consent, False) for consent in required_consents)
+    # Create a dictionary mapping consent_type to active status
+    consent_dict = {consent['consent_type']: consent['active'] for consent in user_consents}
+    # Check if all required consents are active
+    return all(consent_dict.get(consent, False) for consent in required_consents)
 
 def log_action(action_type: str, username: str = None, details: str = None) -> bool:
     """Log a GDPR-relevant action"""
