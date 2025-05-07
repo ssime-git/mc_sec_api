@@ -61,6 +61,8 @@ class ConsentManager:
     def cleanup_expired_consents(self):
         """Clean up expired consents"""
         # Use the unified database function
-        cleanup_expired_data()
-        # Log the cleanup
-        log_action("consent_cleanup", None, "Removed expired consents")
+        deleted_count = cleanup_expired_data()
+        # Log the cleanup with count of deleted records
+        log_action("consent_cleanup", None, f"Removed {deleted_count} expired consents")
+        print(f"Data retention cleanup completed: {deleted_count} expired consents removed")
+        return deleted_count

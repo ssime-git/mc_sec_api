@@ -255,3 +255,63 @@ async def get_user_data(token: str = Depends(oauth2_scheme)):
         return {"username": username}
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+# Test endpoint for data retention - only for testing purposes
+@app.post("/test/expired-consent")
+def test_expired_consent(consent_type: str, token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        # Create a consent with expiration date in the past (yesterday)
+        conn = user_db.get_db_connection()
+        try:
+            yesterday = (datetime.now() - timedelta(days=1)).isoformat()
+            conn.execute(
+                """
+                INSERT INTO consents (username, consent_type, granted, granted_at, expires_at)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(username, consent_type) DO UPDATE SET
+                    granted = ?,
+                    granted_at = CURRENT_TIMESTAMP,
+                    expires_at = ?
+                """,
+                (username, consent_type, True, datetime.now().isoformat(), yesterday, 
+                True, yesterday)
+            )
+            
+            # Log the consent action
+            conn.execute(
+                "INSERT INTO audit_log (action_type, username, details) VALUES (?, ?, ?)",
+                ("consent_granted", username, f"Test expired consent: {consent_type}")
+            )
+            
+            conn.commit()
+            return {"success": True, "message": f"Test expired consent created: {consent_type}", "expires_at": yesterday}
+        finally:
+            conn.close()
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+# Set up scheduled cleanup job for data retention
+scheduler = BackgroundScheduler()
+scheduler.add_job(
+    consent_manager.cleanup_expired_consents,
+    'interval',
+    hours=24,  # Run daily
+    id='cleanup_expired_data'
+)
+
+# Start the scheduler when the application starts
+@app.on_event("startup")
+def start_scheduler():
+    scheduler.start()
+    print("Data retention scheduler started - will clean up expired data every 24 hours")
+
+# Shutdown the scheduler when the application stops
+@app.on_event("shutdown")
+def shutdown_scheduler():
+    scheduler.shutdown()

@@ -180,15 +180,18 @@ def cleanup_expired_data():
     """Remove expired consents and perform other cleanup tasks"""
     conn = get_db_connection()
     try:
-        # Delete expired consents
-        conn.execute("DELETE FROM consents WHERE expires_at < CURRENT_TIMESTAMP")
+        # Delete expired consents using explicit SQLite datetime function
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM consents WHERE expires_at < datetime('now')")
+        deleted_count = cursor.rowcount
         
-        # Log the cleanup action
+        # Log the cleanup action with count of deleted records
         conn.execute(
             "INSERT INTO audit_log (action_type, details) VALUES (?, ?)",
-            ("data_cleanup", "Removed expired consents")
+            ("data_cleanup", f"Removed {deleted_count} expired consents")
         )
         
         conn.commit()
+        return deleted_count
     finally:
         conn.close()

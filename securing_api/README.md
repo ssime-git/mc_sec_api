@@ -4,6 +4,13 @@
 
 This project implements a GDPR-compliant machine learning API system using a two-API architecture that separates security concerns from prediction functionality. This separation is crucial for maintaining GDPR compliance while allowing the ML system to operate efficiently.
 
+### Key Components
+
+1. **Security API**: Handles user authentication, consent management, and data pseudonymization
+2. **Prediction API**: Performs machine learning predictions without access to personally identifiable information
+3. **Unified Database**: Stores user data, consent records, and audit logs in a GDPR-compliant manner
+4. **Automated Data Retention**: Scheduled cleanup of expired data to comply with data minimization principles
+
 ```txt
 ┌─────────────────┐         ┌─────────────────┐
 │                 │         │                 │
@@ -153,14 +160,33 @@ curl -X POST "http://localhost:8000/forward-to-prediction" \
 
 ## GDPR Compliance Features
 
-- **Data Pseudonymization**: PII is transformed before processing
-- **Consent Management**: Explicit opt-in required for data processing
-- **Audit Logging**: All GDPR-relevant actions are logged
-- **Data Retention**: 30-day automatic cleanup of expired data
-- **Right to Access**: Endpoints for users to access their data
-- **Right to Erasure**: Endpoints for users to delete their data
+- **Data Pseudonymization**: PII is transformed before processing, ensuring that sensitive personal data is never directly exposed to the prediction system
+- **Consent Management**: Explicit opt-in required for data processing with configurable expiration dates
+- **Audit Logging**: All GDPR-relevant actions are comprehensively logged with timestamps and user references
+- **Data Retention**: Automated 30-day cleanup of expired data through a scheduled background job
+- **Right to Access**: Endpoints for users to access their data and view their current consent status
+- **Right to Erasure**: Endpoints for users to delete their data with confirmation requirements
 
-## Database Architecture
+## Data Organization and Retention
+
+### Data Storage
+
+The system organizes data into three main categories:
+
+1. **User Data**: Basic account information stored in the users table
+2. **Consent Records**: User consent information with expiration dates
+3. **Audit Logs**: Records of all GDPR-relevant actions for compliance tracking
+
+### Data Retention Implementation
+
+Data retention is implemented through a multi-layered approach:
+
+1. **Scheduled Cleanup**: A background scheduler runs daily to automatically remove expired data
+2. **Configurable Retention Period**: Default retention period is 30 days, but can be configured
+3. **Consent Expiration**: Each consent has an expiration date after which it becomes invalid
+4. **Audit Trail**: All cleanup operations are logged for compliance verification
+
+### Data Persistence
 
 The system uses a unified SQLite database stored in the `data/` directory, which is mounted as a volume for persistence across container restarts. This approach ensures data consistency, enables proper foreign key relationships, and simplifies backup and maintenance.
 
@@ -216,9 +242,124 @@ The system uses a unified SQLite database stored in the `data/` directory, which
    - Processing logged in audit log
 
 4. **Data Retention**
-   - Background scheduler runs cleanup of expired data
-   - Consents with passed expiration dates are removed
-   - Cleanup actions logged in audit log
+   - Background scheduler runs daily cleanup of expired data
+   - Consents with passed expiration dates are automatically removed
+   - Cleanup operations use SQLite's datetime functions for reliable date comparison
+   - Number of removed records is tracked and logged
+   - All cleanup actions are recorded in the audit log with detailed information
+   - Database audit commands available for monitoring and troubleshooting
+
+## Implementation Details
+
+### Data Retention Scheduler
+
+The system implements automated data retention through a background scheduler that runs daily to clean up expired data. This ensures compliance with GDPR's data minimization principle by automatically removing data when its retention period expires.
+
+#### Scheduler Configuration
+
+```python
+# Set up scheduled cleanup job for data retention
+scheduler = BackgroundScheduler()
+scheduler.add_job(
+    consent_manager.cleanup_expired_consents,
+    'interval',
+    hours=24,  # Run daily
+    id='cleanup_expired_data'
+)
+
+# Start the scheduler when the application starts
+@app.on_event("startup")
+def start_scheduler():
+    scheduler.start()
+    print("Data retention scheduler started - will clean up expired data every 24 hours")
+
+# Shutdown the scheduler when the application stops
+@app.on_event("shutdown")
+def shutdown_scheduler():
+    scheduler.shutdown()
+```
+
+#### Cleanup Implementation
+
+The cleanup process uses SQLite's datetime functions for reliable date comparison and tracks the number of records removed:
+
+```python
+def cleanup_expired_data():
+    """Remove expired consents and perform other cleanup tasks"""
+    conn = get_db_connection()
+    try:
+        # Delete expired consents using explicit SQLite datetime function
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM consents WHERE expires_at < datetime('now')")
+        deleted_count = cursor.rowcount
+        
+        # Log the cleanup action with count of deleted records
+        conn.execute(
+            "INSERT INTO audit_log (action_type, details) VALUES (?, ?)",
+            ("data_cleanup", f"Removed {deleted_count} expired consents")
+        )
+        
+        conn.commit()
+        return deleted_count
+    finally:
+        conn.close()
+```
+
+#### Database Audit Commands
+
+The system provides several database audit commands through the Makefile to monitor and troubleshoot the data retention process:
+
+```bash
+# Check for expired consents
+make db-check-expired
+
+# Force cleanup of expired consents
+make db-cleanup-expired
+
+# List all consents in the database
+make db-list-consents
+
+# List all audit log entries
+make db-list-audit
+```
+
+### Scheduler Lifecycle
+
+The scheduler is initialized when the Security API starts and runs in the background. It calls the `cleanup_expired_consents` method daily, which removes any expired consents from the database. The scheduler is properly shut down when the application stops to prevent resource leaks.
+
+### Consent Expiration
+
+Consents are stored with an expiration date, calculated based on the `days_valid` parameter:
+
+```python
+def add_consent(username: str, consent_type: str, granted: bool = True, days_valid: int = 365):
+    # Calculate expiration date
+    expires_at = datetime.now() + timedelta(days=days_valid) if granted and days_valid > 0 else None
+    # Store consent with expiration date
+    # ...
+```
+
+When a consent expires, it is automatically removed by the data retention scheduler.
+
+### Testing Data Retention
+
+You can test the data retention mechanism using the following commands:
+
+```bash
+# Grant a consent with a short expiration period
+make grant-consent TOKEN=your_token
+
+# Check current consents
+make get-consents TOKEN=your_token
+
+# Force scheduler restart to trigger cleanup
+make force-cleanup
+
+# Check logs for cleanup actions
+make check-retention
+```
+
+The test script also includes automated testing of the data retention mechanism by creating a short-lived consent and verifying it gets removed.
 
 ## Project Structure
 
@@ -249,21 +390,25 @@ securing_api/
 
 ## Implementation Improvements
 
-### 1. Unified Database Architecture
+The implementation has been improved in several ways:
 
-We've implemented a single SQLite database with multiple tables instead of separate databases. This approach provides several benefits:
+1. **Unified Database**: The system now uses a single SQLite database with multiple tables, which provides better data consistency, enables proper foreign key relationships, and simplifies backup and maintenance.
 
-- **Data Consistency**: Foreign key constraints ensure referential integrity
-- **Simplified Transactions**: Operations across tables can be atomic
-- **Reduced Complexity**: One connection pool and consistent error handling
-- **Better Performance**: Fewer file handles and connection overhead
-- **Easier Backup**: Single file to back up and restore
+2. **Robust Persistence**: The database is stored in a Docker volume, ensuring data persists across container restarts and updates.
+
+3. **Automated Data Retention**: The system includes a background scheduler that automatically cleans up expired data daily, ensuring compliance with GDPR's data minimization principle.
+
+4. **Comprehensive GDPR Compliance**: The system implements all required GDPR features, including pseudonymization, consent management, audit logging, data retention, and user rights.
+
+5. **Enhanced Security**: The system uses JWT for secure authentication and bcrypt for password hashing.
+
+6. **Improved Error Handling**: The system provides clear error messages and handles edge cases gracefully.
 
 ### 2. Robust Persistence
 
 The database is properly persisted through Docker volumes:
 
-- **Named Volumes**: Clear separation between data and application code
+{{ ... }}
 - **Read-Write Permissions**: Explicit permission settings for security
 - **Automatic Restart**: Containers restart automatically if they crash
 - **Backup Mechanism**: Built-in commands for database backup/restore
