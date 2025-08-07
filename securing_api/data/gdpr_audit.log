@@ -86,3 +86,9 @@
 2025-05-07 14:24:48,841 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
 2025-05-07 14:24:48,853 - DATA_ACCESS - User: apitest - Details: 
 2025-05-07 14:24:49,336 - CONSENT_UPDATE - User: apitest - Details: type=test_expiring granted=True
+2025-08-07 14:49:46,766 - USER_LOGIN - User: apitest - Details: 
+2025-08-07 14:51:55,987 - DATA_ACCESS - User: apitest - Details: 
+2025-08-07 14:52:23,985 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-08-07 14:52:24,106 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-08-07 14:54:33,527 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-08-07 14:54:33,585 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
