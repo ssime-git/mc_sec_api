@@ -117,6 +117,22 @@ docker compose up --build
 make up
 ```
 
+### Default Credentials
+
+Once the services are running, you can log into the system using these pre-configured accounts:
+
+#### Regular User Account
+- **Username**: `testuser`
+- **Password**: `Testpass123!`
+- **Access**: Standard user features (predictions, consent management, personal data access)
+
+#### Admin Account
+- **Username**: `apitest`
+- **Password**: `Test123!`
+- **Access**: Full admin privileges (user management, audit logs, prediction history, database commands)
+
+> **Note**: These are demo credentials for development and testing. In production, ensure you create secure admin accounts and remove default test users.
+
 ## Streamlit Dashboard
 
 The system includes a Streamlit-based dashboard that provides a user-friendly interface for both end clients and administrators to interact with the APIs.

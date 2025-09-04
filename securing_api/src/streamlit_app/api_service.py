@@ -193,8 +193,14 @@ class APIService:
             
             if response.status_code == 200:
                 result = response.json()
-                print(f"Received successful response with {len(result)} items")
-                return result
+                # Handle wrapped API response format
+                if isinstance(result, dict) and "results" in result:
+                    actual_results = result["results"]
+                    print(f"Unwrapped results: {len(actual_results) if isinstance(actual_results, list) else 'not a list'}")
+                    return actual_results
+                else:
+                    print(f"Direct response (no wrapping): {len(result) if isinstance(result, list) else 'not a list'}")
+                    return result
             else:
                 try:
                     error_detail = response.json().get('detail', 'Unknown error')

@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
 import os
+import hashlib
 from apscheduler.schedulers.background import BackgroundScheduler
 
 # Import modules
@@ -18,6 +19,14 @@ init_db()
 # Initialize modules
 gdpr = GDPRUtils(retention_days=30)
 consent_manager = ConsentManager(required_consents=["data_processing", "data_storage"])
+
+# Utility function for creating secure user hashes
+def create_user_hash(username: str) -> str:
+    """Create a secure hash of the username for pseudonymization"""
+    # Use SHA-256 with a salt for better security
+    salt = os.getenv("USER_HASH_SALT", "default-salt-change-in-production")
+    hash_input = f"{username}:{salt}".encode('utf-8')
+    return hashlib.sha256(hash_input).hexdigest()[:16]  # Truncate to 16 chars for brevity
 
 # Security setup
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secure-secret-key")
@@ -219,7 +228,7 @@ async def forward_to_prediction(
             "sex": data.get("sex"),
             "favorite_color": data.get("favorite_color"),
             "favorite_food": data.get("favorite_food"),
-            "user_hash": username  # Add username as a pseudonymized reference
+            "user_hash": create_user_hash(username)  # Add hashed username as a pseudonymized reference
         }
         
         # Log the prediction request
