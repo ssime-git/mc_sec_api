@@ -5,6 +5,7 @@ This server protects resources and validates access tokens with the Authorizatio
 """
 
 from flask import Flask, request, jsonify
+import os
 from flask_cors import CORS
 import logging
 import requests
@@ -20,7 +21,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Auth server configuration
-AUTH_SERVER_URL = "http://localhost:5050"
+AUTH_SERVER_URL = "http://{}:5050".format(os.getenv("HOST_IP", "localhost"))
 
 # Sample protected data
 PROTECTED_DATA = {

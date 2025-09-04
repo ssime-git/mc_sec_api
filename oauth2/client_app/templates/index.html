@@ -53,11 +53,11 @@
         <h3>Step 1: Start OAuth Flow</h3>
         <p>When you click the login button below, the following will happen:</p>
         <ol>
-            <li>You'll be redirected to the Authorization Server (localhost:5050)</li>
+            <li>You'll be redirected to the Authorization Server ({{ host_ip }}:5050)</li>
             <li>The request will include:
                 <div class="code-block">
                     client_id: "myclient"<br>
-                    redirect_uri: "http://localhost:5052/callback"
+                    redirect_uri: "http://{{ host_ip }}:5052/callback"
                 </div>
             </li>
         </ol>

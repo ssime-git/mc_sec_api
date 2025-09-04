@@ -14,6 +14,7 @@ Key Concepts:
 """
 
 from flask import Flask, request, jsonify, redirect
+import os
 import random
 import string
 import time
@@ -32,7 +33,7 @@ app = Flask(__name__)
 clients = {
     "myclient": {
         "client_secret": "mysecret",
-        "redirect_uri": "http://localhost:5052/callback"
+        "redirect_uri": "http://{}:5052/callback".format(os.getenv("HOST_IP", "localhost"))
     }
 }
 auth_codes = {}  # Store auth codes temporarily

@@ -102,39 +102,12 @@ sequenceDiagram
 2. **Setup Virtual Environment**
    ```bash
    # Create virtual environment
-   python3 -m venv .venv
-
-   # Activate virtual environment
-   # On macOS/Linux:
-   source .venv/bin/activate
-   # On Windows:
-   .venv\Scripts\activate
-   ```
-
-3. **Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
+   uv init && uv sync
    ```
 
 ## Running the Demo
 
-1. **Start Authorization Server**
-   ```bash
-   # Terminal 1
-   python auth_server/auth_server.py
-   ```
-
-2. **Start Resource Server**
-   ```bash
-   # Terminal 2
-   python resource_server/resource_server.py
-   ```
-
-3. **Start Client Application**
-   ```bash
-   # Terminal 3
-   python client_app/client_app.py
-   ```
+1. Follow instructions from `SETUP.md`
 
 4. **Access the Application**
    - Open browser to http://localhost:5052

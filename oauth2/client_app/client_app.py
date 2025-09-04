@@ -13,6 +13,7 @@ Client App -> Auth Server (exchange token) -> Client App (with access token)
 """
 
 from flask import Flask, request, redirect, render_template, session
+import os
 import requests
 import secrets
 import logging
@@ -28,16 +29,17 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)  # Required for session management
 
 # OAuth2 Configuration
-AUTH_SERVER = "http://localhost:5050"  # Authorization Server URL
+HOST_IP = os.getenv("HOST_IP", "localhost")
+AUTH_SERVER = "http://{}:5050".format(HOST_IP)  # Authorization Server URL
 CLIENT_ID = "myclient"                 # Our client identifier
 CLIENT_SECRET = "mysecret"             # Our client secret
-REDIRECT_URI = "http://localhost:5052/callback"  # Where to receive the auth code
+REDIRECT_URI = "http://{}:5052/callback".format(HOST_IP)  # Where to receive the auth code
 
 @app.route('/')
 def index():
     """Homepage with login button"""
     logger.info("User accessed the homepage")
-    return render_template('index.html')
+    return render_template('index.html', host_ip=os.getenv('HOST_IP', 'localhost'))
 
 @app.route('/start_oauth')
 def start_oauth():
@@ -103,7 +105,7 @@ def callback():
     
     logger.info("Sending request to Resource Server with access token")
     resource_response = requests.get(
-        "http://localhost:5051/api/user-data",
+        "http://{}:5051/api/user-data".format(os.getenv("HOST_IP", "localhost")),
         headers={"Authorization": f"Bearer {access_token}"}
     )
     

@@ -92,3 +92,25 @@
 2025-08-07 14:52:24,106 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
 2025-08-07 14:54:33,527 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
 2025-08-07 14:54:33,585 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
+2025-08-07 15:01:00,972 - USER_LOGIN - User: apitest - Details: 
+2025-08-07 15:01:10,913 - DATA_ACCESS - User: apitest - Details: 
+2025-08-07 15:01:51,377 - USER_LOGIN - User: apitest - Details: 
+2025-08-07 15:01:58,793 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-08-07 15:01:58,839 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
+2025-09-04 08:06:24,576 - USER_LOGIN - User: testuser - Details: 
+2025-09-04 08:06:43,677 - DATA_ACCESS - User: testuser - Details: 
+2025-09-04 08:07:14,364 - USER_LOGIN - User: testuser - Details: 
+2025-09-04 08:07:20,027 - DATA_ACCESS - User: testuser - Details: 
+2025-09-04 08:07:32,442 - PREDICTION_REQUEST - User: testuser - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-09-04 08:07:32,601 - PREDICTION - User: testuser - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-09-04 08:07:58,412 - PREDICTION_REQUEST - User: testuser - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-09-04 08:07:58,431 - PREDICTION - User: testuser - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-09-04 08:08:06,930 - PREDICTION_REQUEST - User: testuser - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-09-04 08:08:06,945 - PREDICTION - User: testuser - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
+2025-09-04 08:08:12,016 - DATA_ACCESS - User: testuser - Details: 
+2025-09-04 08:08:41,540 - DATA_ACCESS - User: testuser - Details: 
+2025-09-04 08:16:08,782 - USER_LOGIN - User: apitest - Details: 
+2025-09-04 08:37:55,362 - USER_LOGIN - User: apitest - Details: 
+2025-09-04 08:46:01,087 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-09-04 08:46:01,215 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-09-04 08:47:07,050 - DATA_ACCESS - User: apitest - Details: 

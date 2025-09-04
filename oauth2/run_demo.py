@@ -25,17 +25,17 @@ logger = logging.getLogger(__name__)
 def run_auth_server():
     """Run the Authorization Server on port 5050"""
     logger.info("Starting Authorization Server on port 5050")
-    auth_app.run(port=5050)
+    auth_app.run(host="0.0.0.0", port=5050)
 
 def run_resource_server():
     """Run the Resource Server on port 5051"""
     logger.info("Starting Resource Server on port 5051")
-    resource_app.run(port=5051)
+    resource_app.run(host="0.0.0.0", port=5051)
 
 def run_client_app():
     """Run the Client Application on port 5052"""
     logger.info("Starting Client Application on port 5052")
-    client_app.run(port=5052)
+    client_app.run(host="0.0.0.0", port=5052)
 
 def main():
     # Create processes for each server
@@ -55,9 +55,9 @@ def main():
             time.sleep(1)  # Small delay to ensure orderly startup
         
         logger.info("All servers are running!")
-        logger.info("Authorization Server: http://localhost:5050")
-        logger.info("Resource Server: http://localhost:5051")
-        logger.info("Client Application: http://localhost:5052")
+        logger.info("Authorization Server: http://0.0.0.0:5050 (accessible via public IP)")
+        logger.info("Resource Server: http://0.0.0.0:5051 (accessible via public IP)")
+        logger.info("Client Application: http://0.0.0.0:5052 (accessible via public IP)")
         
         # Open the client app in the default browser
         webbrowser.open('http://localhost:5052')

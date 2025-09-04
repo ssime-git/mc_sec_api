@@ -23,3 +23,8 @@ dependencies = [
     "uvicorn>=0.34.0",
     "werkzeug==2.3.7",
 ]
+
+[tool.uv.workspace]
+members = [
+    "oauth2",
+]
