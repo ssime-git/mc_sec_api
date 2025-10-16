@@ -122,3 +122,11 @@
 2025-09-04 11:20:10,277 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
 2025-09-04 11:20:10,300 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Aries
 2025-09-04 11:23:56,883 - DATA_ACCESS - User: apitest - Details: 
+2025-10-16 13:57:50,186 - USER_LOGIN - User: apitest - Details: 
+2025-10-16 13:58:14,866 - PREDICTION_REQUEST - User: apitest - Details: Data format: ['age', 'sex', 'favorite_color', 'favorite_food']
+2025-10-16 13:58:14,933 - PREDICTION - User: apitest - Details: prediction made with pseudonymized data using method: model_numeric, result: Taurus
+2025-10-16 13:58:32,749 - DATA_ACCESS - User: apitest - Details: 
+2025-10-16 13:59:50,677 - DATA_ACCESS - User: apitest - Details: 
+2025-10-16 14:00:16,707 - USER_LOGIN - User: testuser - Details: 
+2025-10-16 14:00:51,284 - DATA_ACCESS - User: testuser - Details: 
+2025-10-16 14:01:02,308 - DATA_ACCESS - User: testuser - Details: 

@@ -18,20 +18,6 @@ This repository is organized into two main components:
 
 We recommend using `uv` to create the virtual environment. For more details about `uv`, check the [documentation](https://docs.astral.sh/uv/getting-started/installation/).
 
-```sh
-# Clone the repo
-git clone https://github.com/ssime-git/mc_sec_api.git
-
-# Create a venv
-uv venv
-
-# Activate the venv
-source .venv/bin/activate
-
-# Install all the dependencies
-uv sync
-```
-
 ## GDPR-Compliant API System
 
 The [securing_api](/securing_api) directory contains a complete implementation of a GDPR-compliant machine learning API system with the following features:
@@ -92,6 +78,8 @@ For detailed documentation on each component:
 
 - [GDPR-Compliant API System Documentation](/securing_api/README.md) - Complete documentation of the architecture, API endpoints, and GDPR compliance features
 
+- [OAuth2 Demo Documentation](/oauth2_demo/README.md) - Explains different OAuth2 flows and how to use them
+
 ## Contributing
 
 Contributions to improve the demonstrations or add new security features are welcome. Please follow these steps:
@@ -101,10 +89,6 @@ Contributions to improve the demonstrations or add new security features are wel
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
