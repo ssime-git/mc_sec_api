@@ -29,8 +29,14 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)  # Required for session management
 
 # OAuth2 Configuration
-HOST_IP = os.getenv("HOST_IP", "localhost")
-AUTH_SERVER = "http://{}:5050".format(HOST_IP)  # Authorization Server URL
+HOST_IP = os.getenv("HOST_IP", "localhost")  # External hostname for browser redirects
+AUTH_SERVER_HOST = os.getenv("AUTH_SERVER_HOST", HOST_IP)  # Internal hostname for server-to-server
+RESOURCE_SERVER_HOST = os.getenv("RESOURCE_SERVER_HOST", HOST_IP)  # Internal hostname for resource server
+
+AUTH_SERVER = "http://{}:5050".format(HOST_IP)  # Authorization Server URL (for browser redirects)
+AUTH_SERVER_INTERNAL = "http://{}:5050".format(AUTH_SERVER_HOST)  # For internal API calls
+RESOURCE_SERVER_INTERNAL = "http://{}:5051".format(RESOURCE_SERVER_HOST)  # For internal API calls
+
 CLIENT_ID = "myclient"                 # Our client identifier
 CLIENT_SECRET = "mysecret"             # Our client secret
 REDIRECT_URI = "http://{}:5052/callback".format(HOST_IP)  # Where to receive the auth code
@@ -80,9 +86,9 @@ def callback():
     
     # 2. Exchange the authorization code for an access token
     logger.info("=== Step 3: Exchanging Auth Code for Access Token ===")
-    
+
     token_response = requests.post(
-        f"{AUTH_SERVER}/token",
+        f"{AUTH_SERVER_INTERNAL}/token",
         json={
             "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
@@ -105,7 +111,7 @@ def callback():
     
     logger.info("Sending request to Resource Server with access token")
     resource_response = requests.get(
-        "http://{}:5051/api/user-data".format(os.getenv("HOST_IP", "localhost")),
+        f"{RESOURCE_SERVER_INTERNAL}/api/user-data",
         headers={"Authorization": f"Bearer {access_token}"}
     )
     
@@ -140,4 +146,4 @@ def callback():
 
 if __name__ == '__main__':
     logger.info("Starting OAuth 2.0 Client Application on port 5052")
-    app.run(port=5052, debug=True)
+    app.run(host='0.0.0.0', port=5052, debug=True)

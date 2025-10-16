@@ -181,4 +181,4 @@ def validate_token():
 
 if __name__ == '__main__':
     logger.info("Starting OAuth 2.0 Authorization Server on port 5050")
-    app.run(port=5050, debug=True)
+    app.run(host='0.0.0.0', port=5050, debug=True)

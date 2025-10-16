@@ -39,3 +39,7 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Documentation
+DOCKER.md
+DOCKER_TAILSCALE.md

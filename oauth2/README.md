@@ -3,6 +3,7 @@
 A comprehensive educational demonstration of the OAuth2 authorization flow, implemented with Python and Flask. This project shows how different components in an OAuth2 system interact to provide secure authorization and resource access.
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [System Architecture](#system-architecture)
 - [OAuth2 Flow Explanation](#oauth2-flow-explanation)
@@ -100,19 +101,26 @@ sequenceDiagram
    - Terminal/Command Prompt
 
 2. **Setup Virtual Environment**
-   ```bash
-   # Create virtual environment
-   uv init && uv sync
-   ```
+
+```bash
+# Create virtual environment
+uv init && uv sync
+```
 
 ## Running the Demo
 
-1. Follow instructions from `SETUP.md`
+1. Follow instructions from `00_manual_setup.md`
+2. Or, just run the following commands:
 
-4. **Access the Application**
-   - Open browser to http://localhost:5052
-   - Click "Login with OAuth2"
-   - Watch the process in both browser and terminal logs
+```bash
+make docker-build
+make docker-up
+```
+Then, Access the Application :
+
+- Open browser to http://localhost:5052
+- Click "Login with OAuth2"
+- Watch the process in both browser and terminal logs
 
 ## Component Details
 
@@ -137,7 +145,8 @@ sequenceDiagram
 ## Understanding the Code
 
 ### Key Files
-```
+
+```sh
 oauth2/
 ├── auth_server/
 │   └── auth_server.py      # Authorization server implementation
@@ -152,6 +161,7 @@ oauth2/
 ### Important Code Sections
 
 1. **Authorization Code Generation**
+
    ```python
    # In auth_server.py
    auth_code = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
@@ -162,6 +172,7 @@ oauth2/
    ```
 
 2. **Token Exchange**
+
    ```python
    # In auth_server.py
    access_token = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
@@ -172,6 +183,7 @@ oauth2/
    ```
 
 3. **Protected Resource Access with Token Validation**
+
    ```python
    # In resource_server.py
    def validate_token(access_token):

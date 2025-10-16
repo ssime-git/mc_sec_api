@@ -1,0 +1,113 @@
+# OAuth2 Demo - Docker Compose Configuration
+# This orchestrates the three-service OAuth2 demonstration system
+
+services:
+  # Authorization Server - Handles OAuth2 flow and token management
+  auth_server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.auth
+    container_name: oauth2_auth_server
+    ports:
+      - "5050:5050"
+    environment:
+      - HOST_IP=${HOST_IP:-localhost}
+      - PYTHONUNBUFFERED=1
+    networks:
+      - oauth2-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5050/', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # Resource Server - Protects resources and validates tokens
+  resource_server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.resource
+    container_name: oauth2_resource_server
+    ports:
+      - "5051:5051"
+    environment:
+      - HOST_IP=${HOST_IP:-localhost}
+      - AUTH_SERVER_HOST=auth_server
+      - PYTHONUNBUFFERED=1
+    networks:
+      - oauth2-network
+    restart: unless-stopped
+    depends_on:
+      auth_server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5051/', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # Client Application - User-facing OAuth2 client
+  client_app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.client
+    container_name: oauth2_client_app
+    ports:
+      - "5052:5052"
+    environment:
+      - HOST_IP=${HOST_IP:-localhost}
+      - AUTH_SERVER_HOST=auth_server
+      - RESOURCE_SERVER_HOST=resource_server
+      - PYTHONUNBUFFERED=1
+    networks:
+      - oauth2-network
+    restart: unless-stopped
+    depends_on:
+      auth_server:
+        condition: service_healthy
+      resource_server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5052/', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+networks:
+  oauth2-network:
+    driver: bridge
+    name: oauth2_demo_network

@@ -21,7 +21,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Auth server configuration
-AUTH_SERVER_URL = "http://{}:5050".format(os.getenv("HOST_IP", "localhost"))
+AUTH_SERVER_HOST = os.getenv("AUTH_SERVER_HOST", os.getenv("HOST_IP", "localhost"))
+AUTH_SERVER_URL = "http://{}:5050".format(AUTH_SERVER_HOST)
 
 # Sample protected data
 PROTECTED_DATA = {
@@ -94,4 +95,4 @@ def get_user_data():
 
 if __name__ == '__main__':
     logger.info("Starting OAuth 2.0 Resource Server on port 5051")
-    app.run(port=5051, debug=True)
+    app.run(host='0.0.0.0', port=5051, debug=True)
